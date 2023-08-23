@@ -32,35 +32,50 @@ class CommentController extends Controller
     {
 
         try {
-            $parent = $request->has('parent_id') ?  $request->parent_id: null ;
+            $parentId = $request->has('parent_id') ?  $request->parent_id: null ;
             $comment = Comment::create([
-                'parent_id' => $parent,
+                'parent_id' => $parentId,
                 'post_id' => $request->post_id,
                 'user_id' => $request->user_id,
                 'content' => $request->content,
             ]);
-            if ($parent) {
-                # code...
+            $right = 1; 
+            if ($parentId) {
+                $parent = Comment::findOrFail($parentId);
+                if (!$parent) {
+                    return response()->json([
+                        'status_code' => 500,
+                        'message' => 'Có lỗi xảy ra thử lại sao ít phút!'
+                    ],500);
+                }  
+                $right = $parent->right;
+                Comment::where([
+                    ['post_id','=',$request->post_id],
+                    ['right','>=',$right]
+                ])->increment('right', 2);
+                Comment::where([
+                    ['post_id','=',$request->post_id],
+                    ['left','>',$right]
+                ])->increment('left', 2);
+      
             }else{
-                $right = 1;
-                $maxRight = Comment::where('post_id', $request->post_id)->orderBy('right', 'DESC')->first();
+                $maxRight = Comment::where('post_id',$request->post_id)->orderBy('right', 'DESC')->first();
                 if ($maxRight) {
-                    $rightValue = $maxRight->right;
-    
-                    $right = $rightValue +1;
+                    $right = $maxRight->right+1;
                 }
-                Comment::where('id', $comment->id)->update(['left' => $right,'right'=>$right+1]);
             }
+           
+            Comment::where('id', $comment->id)->update(['left' => $right,'right'=>$right+1]);
+            $save = Comment::where('id', $comment->id)->get();
             return response()->json([
-                'metadata'=>$comment
+                'message'=>$save
             ],201);
-
         } catch (\Throwable $th) {
             return response()->json([
                 'status_code' => 500,
                 'message' => 'Có lỗi xảy ra thử lại sao ít phút!',
                 'error' => $th,
-            ]);
+            ],500);
         }
         
     }

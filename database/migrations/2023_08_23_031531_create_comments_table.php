@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('comments', function (Blueprint $table) {
             $table->uuid('id')->primary(); 
             $table->string('content');
-            $table->tinyInteger('left')->nullable(true);
-            $table->tinyInteger('right')->nullable(true);
+            $table->tinyInteger('left')->default('0');
+            $table->tinyInteger('right')->default('0');
             $table->uuid('user_id')->nullable(false);
             $table->uuid('post_id')->nullable(false);
             $table->uuid('parent_id')->nullable(true);
