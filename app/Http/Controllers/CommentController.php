@@ -12,9 +12,34 @@ class CommentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        try {
+            if ($request->has('parent_id')) {
+                $comments = Comment::where([
+                    ['post_id',$request->post_id],
+                    ['left','>',$request->left],
+                    ['right','<=',$request->right],
+                ])->orderBy('left','ASC')->get();
+                return response()->json([
+                    'metadata'=> $comments
+                ]);
+            }else{
+                $comments = Comment::where([
+                    ['post_id',$request->post_id],
+                    ['parent_id',null]
+                ])->orderBy('left','ASC')->get();
+                return response()->json([
+                    'metadata'=> $comments
+                ]);
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status_code' => 500,
+                'message' => 'Có lỗi xảy ra thử lại sao ít phút!',
+                'error' => $th,
+            ],500);
+        }
     }
 
     /**
