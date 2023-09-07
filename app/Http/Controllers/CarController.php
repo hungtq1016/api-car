@@ -2,25 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CarModel;
+use App\Models\Car;
 use Illuminate\Http\Request;
 
-class ModelController extends Controller
+class CarController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        // $models = CarModel::with('image')->get();
-
-        $models = CarModel::inRandomOrder()->with('cars')->with('image')->limit(50)->get();
-        
-        return response()->json([
-            'code' => 200,
-            'error' => false,
-            'data'=> $models
-        ]);
+        //
     }
 
     /**
@@ -42,7 +34,7 @@ class ModelController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Car $car)
     {
         //
     }
@@ -50,7 +42,7 @@ class ModelController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Car $car)
     {
         //
     }
@@ -58,7 +50,7 @@ class ModelController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Car $car)
     {
         //
     }
@@ -66,7 +58,7 @@ class ModelController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Car $car)
     {
         //
     }
