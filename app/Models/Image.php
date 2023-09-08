@@ -12,12 +12,12 @@ class Image extends Model
     use HasFactory;
     use UUID;
 
-    public function carModels(): HasMany
+    public function brands(): HasMany
     {
-        return $this->hasMany(CarModel::class);
+        return $this->hasMany(Brand::class);
     }
-    public function cars(): HasMany
-    {
-        return $this->hasMany(Car::class);
-    }
+    // public function cars(): HasMany
+    // {
+    //     return $this->hasMany(Car::class);
+    // }
 }

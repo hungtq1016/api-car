@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Brand;
 use App\Models\CarModel;
+use App\Models\Version;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class ModelController extends Controller
 {
@@ -12,9 +15,10 @@ class ModelController extends Controller
      */
     public function index()
     {
-        // $models = CarModel::with('image')->get();
+        // $models = CarModel::with('version')->get();
+        $models = CarModel::all();
 
-        $models = CarModel::inRandomOrder()->with('cars')->with('image')->limit(50)->get();
+        // $models = CarModel::inRandomOrder()->with('cars')->with('image')->limit(50)->get();
         
         return response()->json([
             'code' => 200,
@@ -36,7 +40,30 @@ class ModelController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $carName = $request->car_name;
+        $arr = explode(' ',$carName);
+        $brand = Brand::firstOrCreate([
+            'name' => $arr[0],
+            'slug' =>Str::slug($arr[0], '-'),
+            'image_id'=>''
+        ]);
+
+        $model = CarModel::firstOrCreate([
+            'name' => $arr[1],
+            'slug' =>Str::slug($arr[0], '-'),
+            'brand_id'=>$brand->id
+        ]);
+
+        // $model->brand_id = $brand->id;
+        $model->save();
+
+        $version = Version::firstOrCreate([
+            'year' => $arr[2],
+            'model_id'=>$model->id
+        ]);
+
+        $version->model_id = $model->id;
+        $version->save();
     }
 
     /**

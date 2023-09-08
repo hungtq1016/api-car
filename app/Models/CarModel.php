@@ -13,14 +13,16 @@ class CarModel extends Model
     use HasFactory;
     use UUID;
     protected $table ='models';
-    
-    public function image(): BelongsTo
+    protected $hidden = ['brand_od'];
+    protected $fillable = ['name','slug','brand_id'];
+
+    public function versions(): HasMany
     {
-        return $this->belongsTo(Image::class);
+        return $this->hasMany(Version::class,'model_id');
     }
 
-    public function cars(): HasMany
+    public function brand(): BelongsTo
     {
-        return $this->hasMany(Car::class,'model_id');
+        return $this->belongsTo(Brand::class);
     }
 }

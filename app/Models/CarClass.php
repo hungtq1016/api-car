@@ -11,10 +11,10 @@ class CarClass extends Model
 {
     use HasFactory;
     use UUID;
-    protected $table ='class';
+    // protected $table ='class';
 
-    public function cars(): BelongsToMany
-    {
-        return $this->belongsToMany(Car::class, 'car_class');
-    }
+    // public function cars(): BelongsToMany
+    // {
+    //     return $this->belongsToMany(Car::class, 'car_class');
+    // }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ModelController;
 use App\Http\Controllers\PostController;
@@ -19,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 */
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
+Route::resource('/brand', BrandController::class);
 Route::resource('/model', ModelController::class);
 
 Route::middleware(['auth:sanctum'])->group(function () {
