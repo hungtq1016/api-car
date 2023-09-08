@@ -12,20 +12,25 @@ class Car extends Model
 {
     use HasFactory;
     use UUID;
-    // protected $table ='cars';
 
-    // public function image(): BelongsTo
-    // {
-    //     return $this->belongsTo(Image::class);
-    // }
+    protected $table ='cars';
+    protected $fillable = ['name','slug','seats','electric','gear','brand_id','version_id','model_id'];
 
-    // public function classes(): BelongsToMany
-    // {
-    //     return $this->belongsToMany(CarClass::class, 'car_class');
-    // }
+    public function brand(): BelongsTo
+    {
+        return $this->belongsTo(Brand::class);
+    }
+    public function model(): BelongsTo
+    {
+        return $this->belongsTo(CarModel::class);
+    }
+    public function version(): BelongsTo
+    {
+        return $this->belongsTo(Version::class);
+    }
 
-    // public function brand(): BelongsTo
-    // {
-    //     return $this->belongsTo(Brand::class);
-    // }
+    public function images():BelongsToMany
+    {
+        return $this->belongsToMany(Image::class,'car_image','car_id');
+    }
 }
