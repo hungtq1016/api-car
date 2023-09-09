@@ -13,6 +13,7 @@ class Image extends Model
     use HasFactory;
     use UUID;
     protected $fillable = ['src','local_src'];
+    protected $hidden = ['pivot','id','created_at','updated_at'];
     public function brands(): HasMany
     {
         return $this->hasMany(Brand::class);

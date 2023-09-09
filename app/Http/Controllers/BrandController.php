@@ -14,9 +14,9 @@ class BrandController extends Controller
     {
         //   $brands = Brand::through('models')->has('deployments')->get();
             // $brands = Brand::with('models')->get();
-        $brands = Brand::all();
+        // $brands = Brand::all();
 
-        // $brands = Brand::inRandomOrder()->with('image')->limit(50)->get();   
+        $brands = Brand::with('image')->withCount('models')->orderBy('models_count', 'desc')->limit(30)->get();   
         
         return response()->json([
             'code' => 200,

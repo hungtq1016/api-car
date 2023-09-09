@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CarResource;
 use App\Models\Brand;
 use App\Models\Car;
 use App\Models\CarModel;
@@ -18,10 +19,15 @@ class CarController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-    }
+        $cars = CarResource::collection(Car::inRandomOrder()->limit(8)->get());   
+        return response()->json([
+            'status_code'=>200,
+            'error'=>false,
+            'data'=>$cars
+        ]);
+    }   
 
     /**
      * Show the form for creating a new resource.
@@ -64,7 +70,7 @@ class CarController extends Controller
 
         // $version->model_id = $model->id;
         $version->save();
-        $car = Car::create([
+        $car = Car::firstOrCreate([
             'name' => $carName,
             'slug'=>Str::slug($carName, '-'),
             'brand_id'=>$brand->id,
@@ -75,17 +81,11 @@ class CarController extends Controller
             'seats'=>$seats
         ]);
         foreach ($images as $image) {
-            // $url = "http://www.google.co.in/intl/en_com/images/srpr/logo1w.png";
             $contents = file_get_contents($image);
             $name = substr($image, strrpos($image, '/') + 1);
-            $local = '/cars/'.$name;
+            $local = '/cars/'.Str::uuid().strrchr($name, '.');
              Storage::disk('public')->put($local, $contents);
             
-            // $info = pathinfo($image);
-            // $contents = file_get_contents($image);
-            // $file = '/cars/' . $info['basename'];
-            // file_put_contents($file, $contents);
-            // $uploaded_file = new UploadedFile($file, $info['basename']);
             $img = Image::create([
                 'src'=>$image,
                 'local_src'=>$local,
@@ -97,6 +97,12 @@ class CarController extends Controller
             ]);
 
         }
+        return response()->json([
+            'status_code'=>201,
+            'error'=>false,
+            'message'=>'Tải thành công',
+            'tét'=>$name
+        ],201);
     }
 
     /**
