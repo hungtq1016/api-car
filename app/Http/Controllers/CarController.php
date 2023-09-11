@@ -47,16 +47,24 @@ class CarController extends Controller
         $electric = $request->electric;
         $gear= $request->gear;
         $images = $request->images;
-        $arr = explode(' ',$carName);
+        // $arr = explode(' ',$carName);
+
+        // Chia chuỗi thành các từ
+        $arrName = explode(" ", $carName);
+        // Lấy từ đầu tiên của mảng
+        $first_word = $arrName[0];
+        $lower = mb_strtolower($carName);
+        // Lấy từ cuối cùng của mảng
+        $last_word = $arrName[count($arrName) - 1];
         $brand = Brand::firstOrCreate([
-            'name' => $arr[0],
-            'slug' =>Str::slug($arr[0], '-'),
+            'name' => ucfirst($first_word),
+            'slug' =>Str::slug($first_word, '-'),
             'image_id'=>''
         ]);
-
+        $middle_word= substr_replace($lower,$last_word,0);
         $model = CarModel::firstOrCreate([
-            'name' => $arr[1],
-            'slug' =>Str::slug($arr[0], '-'),
+            'name' => $middle_word,
+            'slug' =>Str::slug($middle_word, '-'),
             'brand_id'=>$brand->id
         ]);
 
@@ -64,7 +72,7 @@ class CarController extends Controller
         $model->save();
 
         $version = Version::firstOrCreate([
-            'year' => is_integer($arr[2]) ? $arr[2] : null,
+            'year' => is_integer($last_word) ? $last_word : intval($last_word),
             'model_id'=>$model->id
         ]);
 
