@@ -24,7 +24,9 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::resource('/brand', BrandController::class);
 Route::resource('/model', ModelController::class);
-Route::resource('/car', CarController::class);
+Route::resource('/car', CarController::class)->parameters([
+    'car' => 'slug'
+]);;
 Route::resource('/location', LocationController::class);
 
 Route::middleware(['auth:sanctum'])->group(function () {

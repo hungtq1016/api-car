@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CarCollection;
 use App\Http\Resources\CarResource;
 use App\Models\Brand;
 use App\Models\Car;
@@ -9,7 +10,6 @@ use App\Models\CarModel;
 use App\Models\Image;
 use App\Models\Version;
 use Illuminate\Http\Request;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -50,21 +50,22 @@ class CarController extends Controller
         // $arr = explode(' ',$carName);
 
         // Chia chuỗi thành các từ
-        $arrName = explode(" ", $carName);
+        $arrName = explode(" ", strtolower($carName));
         // Lấy từ đầu tiên của mảng
         $first_word = $arrName[0];
-        $lower = mb_strtolower($carName);
-        // Lấy từ cuối cùng của mảng
         $last_word = $arrName[count($arrName) - 1];
+
+        $fitst = array_shift($arrName);
+        $last = array_pop($arrName);
+        $mid =implode(" ", $arrName);
         $brand = Brand::firstOrCreate([
             'name' => ucfirst($first_word),
             'slug' =>Str::slug($first_word, '-'),
             'image_id'=>''
         ]);
-        $middle_word= substr_replace($lower,$last_word,0);
         $model = CarModel::firstOrCreate([
-            'name' => $middle_word,
-            'slug' =>Str::slug($middle_word, '-'),
+            'name' => $mid,
+            'slug' =>Str::slug($mid, '-'),
             'brand_id'=>$brand->id
         ]);
 
@@ -93,9 +94,9 @@ class CarController extends Controller
             $name = substr($image, strrpos($image, '/') + 1);
             $local = '/cars/'.Str::uuid().strrchr($name, '.');
              Storage::disk('public')->put($local, $contents);
-            
+            $host = request()->getHttpHost();
             $img = Image::create([
-                'src'=>$image,
+                'src'=>$host,
                 'local_src'=>$local,
             ]);
             DB::table('car_image')->insert([
@@ -116,9 +117,14 @@ class CarController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Car $car)
+    public function show(string $slug)
     {
-        //
+        return response()->json([
+            'status_code' => 200,
+            'error' => false,
+            'message'=>'Thành công',
+            'data' => new CarResource(Car::where('slug',$slug)->first())
+        ]);
     }
 
     /**

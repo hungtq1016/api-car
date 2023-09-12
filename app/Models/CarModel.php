@@ -14,7 +14,7 @@ class CarModel extends Model
     use UUID;
     protected $table ='models';
     protected $hidden = ['brand_id'];
-    protected $fillable = ['name','slug','brand_id'];
+    protected $fillable = ['name','slug','brand_id','created_at','updated_at'];
 
     public function versions(): HasMany
     {

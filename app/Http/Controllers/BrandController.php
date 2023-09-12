@@ -16,7 +16,7 @@ class BrandController extends Controller
             // $brands = Brand::with('models')->get();
         // $brands = Brand::all();
 
-        $brands = Brand::with('image')->withCount('models')->orderBy('models_count', 'desc')->limit(30)->get();   
+        $brands = Brand::with('image')->withCount('models')->orderBy('models_count', 'desc')->limit(10)->get();   
         
         return response()->json([
             'code' => 200,

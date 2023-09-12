@@ -15,7 +15,7 @@ class Version extends Model
 
     protected $table ='versions';
     protected $hidden = ['model_id'];
-    protected $fillable = ['year','model_id'];
+    protected $fillable = ['year','model_id','created_at','updated_at'];
 
     public function model(): BelongsTo
     {

@@ -14,7 +14,7 @@ class Brand extends Model
     use HasFactory;
     use UUID;
     protected $table ='brands';
-    protected $fillable = ['name','slug','image_id'];
+    protected $fillable = ['name','slug','image_id','created_at','updated_at'];
     public function image(): BelongsTo
     {
         return $this->belongsTo(Image::class);

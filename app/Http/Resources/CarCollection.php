@@ -5,12 +5,12 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CarResource extends JsonResource
+class CarCollection extends JsonResource
 {
     /**
-     * Transform the resource into an array.
+     * Transform the resource collection into an array.
      *
-     * @return array<string, mixed>
+     * @return array<int|string, mixed>
      */
     public function toArray(Request $request): array
     {
@@ -22,12 +22,9 @@ class CarResource extends JsonResource
             'gear' => $this->gear,
             'electric' => $this->electric,
             'brand'=>$this->brand,
-            'model'=>$this->model,
-            'version'=>$this->version,
             'images'=>$this->images,
             'transmission'=>1,
             'isDelivery'=>1
         ];
-        
     }
 }
