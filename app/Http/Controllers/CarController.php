@@ -50,7 +50,8 @@ class CarController extends Controller
         // $arr = explode(' ',$carName);
 
         // Chia chuỗi thành các từ
-        $arrName = explode(" ", strtolower($carName));
+        $names= strtolower($carName);
+        $arrName = explode(" ",$names);
         // Lấy từ đầu tiên của mảng
         $first_word = $arrName[0];
         $last_word = $arrName[count($arrName) - 1];
@@ -80,8 +81,8 @@ class CarController extends Controller
         // $version->model_id = $model->id;
         $version->save();
         $car = Car::firstOrCreate([
-            'name' => $carName,
-            'slug'=>Str::slug($carName, '-'),
+            'name' => $names,
+            'slug'=>Str::slug($names, '-'),
             'brand_id'=>$brand->id,
             'model_id'=>$model->id,
             'version_id'=>$version->id,
