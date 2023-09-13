@@ -2,26 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\CarCollection;
 use App\Http\Resources\CarResource;
 use App\Models\Brand;
 use App\Models\Car;
 use App\Models\CarModel;
-use App\Models\Comment;
 use App\Models\District;
 use App\Models\Feature;
-use App\Models\Image;
 use App\Models\Owner;
 use App\Models\Province;
 use App\Models\User;
 use App\Models\Version;
 use App\Traits\getImageFromURL;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
-use Faker\Generator as Faker;
+use App\Http\Controllers\CommentController;
 
 class CarController extends Controller
 {
@@ -137,17 +131,42 @@ class CarController extends Controller
             $imageId = $this->getImage($image, 'cars');
             array_push($is, $imageId);
         }
+        
         $owner->features()->attach($fs);
         $owner->images()->attach($is);
-        $users = User::limit(50)->get();
+
+        $randCmt = rand(5,15);
+        $parentId = null;
+        $result = '';
+        $parentArr=[];
+        for ($i=0; $i < $randCmt; $i++) { 
+            $us = User::inRandomOrder()->first();
+            if ($i>0) {
+                array_push($parentArr,$parentId);
+                $result = (new CommentController)->store([
+                    'post_id'=>$owner->id,
+                    'user_id'=>$us->id,
+                    'content'=>fake()->text(),
+                    'parent_id'=>$parentArr[rand(0,count($parentArr)-1)]
+                ]);
+                $parentId =strval($result->original['message'][0]['id']);
+            }else{
+                $result = (new CommentController)->store([
+                    'post_id'=>$owner->id,
+                    'user_id'=>$us->id,
+                    'content'=>fake()->text(),
+                    'parent_id'=>$parentId
+                ]);
+                $parentId =strval($result->original['message'][0]['id']);
+            }
+            
+            
+        }
+
         return response()->json([
             'status_code' => 201,
             'error' => false,
             'message' => 'Tải thành công',
-            'data'=>[
-                'post_id'=>$owner->id,
-                'user'=>$users,
-            ]
         ], 201);
     }
 
