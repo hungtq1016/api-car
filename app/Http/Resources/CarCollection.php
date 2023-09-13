@@ -22,7 +22,6 @@ class CarCollection extends JsonResource
             'gear' => $this->gear,
             'electric' => $this->electric,
             'brand'=>$this->brand,
-            'images'=>$this->images,
             'transmission'=>1,
             'isDelivery'=>1
         ];

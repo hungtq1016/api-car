@@ -27,10 +27,11 @@ Route::resource('/model', ModelController::class);
 Route::resource('/car', CarController::class)->parameters([
     'car' => 'slug'
 ]);;
+Route::resource('/comment', CommentController::class);
+
 Route::resource('/location', LocationController::class);
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::resource('/user', UserController::class);
     Route::resource('/post', PostController::class);
-    Route::resource('/comment', CommentController::class);
 });

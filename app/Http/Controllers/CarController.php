@@ -7,27 +7,38 @@ use App\Http\Resources\CarResource;
 use App\Models\Brand;
 use App\Models\Car;
 use App\Models\CarModel;
+use App\Models\Comment;
+use App\Models\District;
+use App\Models\Feature;
 use App\Models\Image;
+use App\Models\Owner;
+use App\Models\Province;
+use App\Models\User;
 use App\Models\Version;
+use App\Traits\getImageFromURL;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Faker\Generator as Faker;
 
 class CarController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+    use getImageFromURL;
     public function index(Request $request)
     {
-        $cars = CarResource::collection(Car::inRandomOrder()->limit(8)->get());   
+        $owner = Owner::with('car')->with('images')->get();
+        // $cars = CarResource::collection(Car::inRandomOrder()->limit(8)->get());   
         return response()->json([
-            'status_code'=>200,
-            'error'=>false,
-            'data'=>$cars
+            'status_code' => 200,
+            'error' => false,
+            'data' => $owner
         ]);
-    }   
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -43,31 +54,49 @@ class CarController extends Controller
     public function store(Request $request)
     {
         $carName = $request->car_name;
-        $seats= $request->seats;
+        $seats = $request->seats;
         $electric = $request->electric;
-        $gear= $request->gear;
+        $gear = $request->gear;
+        $features = $request->features;
         $images = $request->images;
-        // $arr = explode(' ',$carName);
-
+        $location = $request->location;
+        $desc = $request->desc;
+        $price = $request->price;
+        $location = str_replace(', ', ',', $location);
+        $locate = explode(',', $location);
+        $locate = array_reverse($locate);
+        $fs = [];
+        foreach ($features as $feature) {
+            $f = Feature::firstOrCreate([
+                'name' => $feature['name'],
+                'slug' => Str::slug($feature['name'], '-'),
+            ]);
+            if ($f->image_id == null) {
+                $id = $this->getImage($feature['logo'], 'logo');
+                $f->image_id = $id;
+                $f->save();
+            }
+            array_push($fs, $f->id);
+        }
         // Chia chuỗi thành các từ
-        $names= strtolower($carName);
-        $arrName = explode(" ",$names);
+        $names = strtolower($carName);
+        $arrName = explode(" ", $names);
         // Lấy từ đầu tiên của mảng
         $first_word = $arrName[0];
         $last_word = $arrName[count($arrName) - 1];
 
         $fitst = array_shift($arrName);
         $last = array_pop($arrName);
-        $mid =implode(" ", $arrName);
+        $mid = implode(" ", $arrName);
         $brand = Brand::firstOrCreate([
             'name' => ucfirst($first_word),
-            'slug' =>Str::slug($first_word, '-'),
-            'image_id'=>''
+            'slug' => Str::slug($first_word, '-'),
+            'image_id' => ''
         ]);
         $model = CarModel::firstOrCreate([
             'name' => $mid,
-            'slug' =>Str::slug($mid, '-'),
-            'brand_id'=>$brand->id
+            'slug' => Str::slug($mid, '-'),
+            'brand_id' => $brand->id
         ]);
 
         // $model->brand_id = $brand->id;
@@ -75,44 +104,51 @@ class CarController extends Controller
 
         $version = Version::firstOrCreate([
             'year' => is_integer($last_word) ? $last_word : intval($last_word),
-            'model_id'=>$model->id
+            'model_id' => $model->id
         ]);
 
         // $version->model_id = $model->id;
         $version->save();
         $car = Car::firstOrCreate([
             'name' => $names,
-            'slug'=>Str::slug($names, '-'),
-            'brand_id'=>$brand->id,
-            'model_id'=>$model->id,
-            'version_id'=>$version->id,
-            'gear'=>$gear,
-            'electric'=>$electric,
-            'seats'=>$seats
+            'slug' => Str::slug($names, '-'),
+            'brand_id' => $brand->id,
+            'model_id' => $model->id,
+            'version_id' => $version->id,
+            'gear' => $gear,
+            'electric' => $electric,
+            'seats' => $seats
         ]);
-        foreach ($images as $image) {
-            $contents = file_get_contents($image);
-            $name = substr($image, strrpos($image, '/') + 1);
-            $local = '/cars/'.Str::uuid().strrchr($name, '.');
-             Storage::disk('public')->put($local, $contents);
-            $host = request()->getHttpHost();
-            $img = Image::create([
-                'src'=>$host,
-                'local_src'=>$local,
-            ]);
-            DB::table('car_image')->insert([
-                'id'=>Str::uuid(),
-                'car_id' => $car->id,
-                'image_id' => $img->id
-            ]);
 
+        $user = User::inRandomOrder()->first();
+        $dis = District::where('name', $locate[1])->first();
+        $pro = Province::where('name', $locate[0] == 'Hồ Chí Minh' ? 'Thành phố Hồ Chí Minh' : $locate[0])->first();
+        $owner = Owner::create([
+            'id' => Str::uuid(),
+            'user_id' => $user->id,
+            'car_id' => $car->id,
+            'province_id' => $pro->id ?? null,
+            'district_id' => $dis->id ?? null,
+            'desc' => $desc,
+            'price' => $price,
+        ]);
+        $is = [];
+        foreach ($images as $image) {
+            $imageId = $this->getImage($image, 'cars');
+            array_push($is, $imageId);
         }
+        $owner->features()->attach($fs);
+        $owner->images()->attach($is);
+        $users = User::limit(50)->get();
         return response()->json([
-            'status_code'=>201,
-            'error'=>false,
-            'message'=>'Tải thành công',
-            'tét'=>$name
-        ],201);
+            'status_code' => 201,
+            'error' => false,
+            'message' => 'Tải thành công',
+            'data'=>[
+                'post_id'=>$owner->id,
+                'user'=>$users,
+            ]
+        ], 201);
     }
 
     /**
@@ -123,8 +159,8 @@ class CarController extends Controller
         return response()->json([
             'status_code' => 200,
             'error' => false,
-            'message'=>'Thành công',
-            'data' => new CarResource(Car::where('slug',$slug)->first())
+            'message' => 'Thành công',
+            'data' => new CarResource(Car::where('slug', $slug)->first())
         ]);
     }
 

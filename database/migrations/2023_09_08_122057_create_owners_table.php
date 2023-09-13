@@ -13,9 +13,13 @@ return new class extends Migration
     {
         Schema::create('owners', function (Blueprint $table) {
             $table->uuid('id')->primary(); 
-            $table->string('province');
-            $table->string('district');
-            $table->string('phone');
+            $table->uuid('province_id')->nullable(true);
+            $table->uuid('district_id')->nullable(true);
+            $table->uuid('ward_id')->nullable(true);
+            $table->unsignedBigInteger('price');
+            $table->text('desc');
+            $table->text('notes');
+            $table->uuid('car_id');
             $table->uuid('user_id');
             $table->timestamps();
         });

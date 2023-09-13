@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Car extends Model
 {
@@ -15,6 +16,7 @@ class Car extends Model
 
     protected $table ='cars';
     protected $fillable = ['name','slug','seats','electric','gear','brand_id','version_id','model_id'];
+    protected $hidden = ['created_at','updated_at'];
 
     public function brand(): BelongsTo
     {
@@ -28,9 +30,7 @@ class Car extends Model
     {
         return $this->belongsTo(Version::class);
     }
-
-    public function images():BelongsToMany
-    {
-        return $this->belongsToMany(Image::class,'car_image','car_id');
+    public function owners() : HasMany {
+        return $this->hasMany(Owner::class);
     }
 }

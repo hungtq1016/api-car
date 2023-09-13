@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 return new class extends Migration
 {
@@ -11,9 +12,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('car_image', function (Blueprint $table) {
-            $table->uuid('id')->primary(); 
-            $table->uuid('car_id');
+        Schema::create('owner_image', function (Blueprint $table) {
+            $table->id(); 
+            $table->uuid('owner_id');
             $table->uuid('image_id');
             $table->timestamps();
         });
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('table_owner_images');
     }
 };

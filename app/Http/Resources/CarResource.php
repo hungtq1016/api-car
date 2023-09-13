@@ -24,7 +24,6 @@ class CarResource extends JsonResource
             'brand'=>$this->brand,
             'model'=>$this->model,
             'version'=>$this->version,
-            'images'=>$this->images,
             'transmission'=>1,
             'isDelivery'=>1
         ];
