@@ -15,7 +15,7 @@ class Owner extends Model
     use UUID;
 
     protected $table ='owners';
-    protected $fillable = ['province_id','district_id','desc','price','car_id','user_id'];
+    protected $fillable = ['province_id','district_id','desc','price','car_id','user_id','notes','isDelivery'];
 
     public function images():BelongsToMany
     {
@@ -32,6 +32,20 @@ class Owner extends Model
         return $this->belongsTo(Car::class);
     }
 
+    public function district():BelongsTo
+    {
+        return $this->belongsTo(District::class);
+    }
+
+    public function province():BelongsTo
+    {
+        return $this->belongsTo(Province::class);
+    }
+    public function ward():BelongsTo
+    {
+        return $this->belongsTo(Ward::class);
+    }
+
     public function user():BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -41,4 +55,9 @@ class Owner extends Model
     {
         return $this->hasMany(Comment::class); 
     }
+
+    public function guests() : BelongsToMany {
+        return $this->belongsToMany(User::class,'owner_guest','owner_id');
+    }
+    
 }

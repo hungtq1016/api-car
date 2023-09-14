@@ -17,6 +17,7 @@ return new class extends Migration
             $table->uuid('district_id')->nullable(true);
             $table->uuid('ward_id')->nullable(true);
             $table->unsignedBigInteger('price');
+            $table->boolean('isDelivery')->default(1);
             $table->text('desc');
             $table->text('notes');
             $table->uuid('car_id');

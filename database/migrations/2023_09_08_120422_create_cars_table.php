@@ -16,8 +16,9 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug');
             $table->tinyInteger('seats');
-            $table->tinyInteger('gear');
-            $table->tinyInteger('electric');
+            $table->tinyInteger('transmission_type');
+            $table->tinyInteger('fuel_type');
+            $table->integer('fuel_consumption');
             $table->uuid('brand_id');
             $table->uuid('model_id');
             $table->uuid('version_id');

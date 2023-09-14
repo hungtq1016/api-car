@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Comment;
 use App\Http\Requests\StoreCommentRequest;
 use App\Http\Requests\UpdateCommentRequest;
+use App\Http\Resources\ChildCommentResource;
 use App\Http\Resources\CommentResource;
 use Illuminate\Http\Request;
 
@@ -15,24 +16,33 @@ class CommentController extends Controller
      */
     public function index(Request $request)
     {
-        // if ($request->has('parent_id')) {
-        //     $comments = Comment::where([
-        //         ['post_id',$request['post_id']],
-        //         ['left','>',$request->left],
-        //         ['right','<=',$request->right],
-        //     ])->orderBy('left','ASC')->get();
-        //     return response()->json([
-        //         'metadata'=> $comments
-        //     ]);
-        // }else{
-        //     $comments = Comment::where([
-        //         ['post_id',$request['post_id']],
-        //         ['parent_id',null]
-        //     ])->orderBy('left','ASC')->get();
+        if ($request->has('parent_id')) {
+            $comments = Comment::where([
+                ['post_id',$request['post_id']],
+                ['left','>',$request->left],
+                ['right','<=',$request->right],
+            ])->get();
             return response()->json([
-                'metadata'=> CommentResource::collection(Comment::with('children')->get())
+                'status_code'=>200,
+                'error'=>false,
+                'message'=>'Gọi bình luận thành công',
+                'data'=> ChildCommentResource::collection($comments)
             ]);
-        // }
+       
+        }else{
+            $comments = Comment::where([
+                ['post_id',$request['post_id']],
+                ['parent_id',null]
+            ])->get();
+            return response()->json([
+                'status_code'=>200,
+                'error'=>false,
+                'message'=>'Gọi bình luận thành công',
+                'data'=> CommentResource::collection($comments)
+            ]);
+            
+        }
+       
 
     }
 

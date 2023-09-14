@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Traits\UUID;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
@@ -50,5 +51,9 @@ class User extends Authenticatable
     public function ownerCars() : HasMany 
     {
         return $this->hasMany(Owner::class);    
+    }
+
+    public function hasBorrow() : BelongsToMany {
+        return $this->belongsToMany(Owner::class,'owner_guest','user_id');
     }
 }

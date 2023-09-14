@@ -16,6 +16,7 @@ use App\Traits\getImageFromURL;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Http\Controllers\CommentController;
+use App\Http\Resources\ThumbResource;
 
 class CarController extends Controller
 {
@@ -23,14 +24,15 @@ class CarController extends Controller
      * Display a listing of the resource.
      */
     use getImageFromURL;
+
     public function index(Request $request)
     {
-        $owner = Owner::with('car')->with('images')->get();
+        $cars = Owner::inRandomOrder()->limit(8)->get();
         // $cars = CarResource::collection(Car::inRandomOrder()->limit(8)->get());   
         return response()->json([
             'status_code' => 200,
             'error' => false,
-            'data' => $owner
+            'data' => ThumbResource::collection($cars)
         ]);
     }
 
@@ -49,12 +51,37 @@ class CarController extends Controller
     {
         $carName = $request->car_name;
         $seats = $request->seats;
-        $electric = $request->electric;
-        $gear = $request->gear;
+        $fuel_consumption = $request->fuel_consumption;
+        $fuel_type = $request->fuel_type;
         $features = $request->features;
         $images = $request->images;
-        $location = $request->location;
+        $location = $request->location;;
+        $isDelivery = $request->isDelivery;
         $desc = $request->desc;
+        $notes = $request->notes;
+        $transmission_type = $request->transmission_type;
+        function random_number() {
+            $probabilities = [
+                1 => 2,
+                2 => 3,
+                3 => 10,
+                4 => 15,
+                5 => 70,
+            ];
+            
+            // Tạo một biến để lưu trữ giá trị random
+            $random_value = rand(1, 5);
+            
+            // Kiểm tra xác suất của từng giá trị
+            foreach ($probabilities as $value => $probability) {
+                if ($random_value <= $probability) {
+                    return $value;
+                }
+            }
+            
+            // Nếu giá trị vượt quá xác suất của tất cả các giá trị, trả về 5
+            return 5;
+          }
         $price = $request->price;
         $location = str_replace(', ', ',', $location);
         $locate = explode(',', $location);
@@ -109,8 +136,9 @@ class CarController extends Controller
             'brand_id' => $brand->id,
             'model_id' => $model->id,
             'version_id' => $version->id,
-            'gear' => $gear,
-            'electric' => $electric,
+            'fuel_type' => $fuel_type,
+            'fuel_consumption' => $fuel_consumption,
+            'transmission_type' => $transmission_type&&-1,
             'seats' => $seats
         ]);
 
@@ -120,9 +148,11 @@ class CarController extends Controller
         $owner = Owner::create([
             'id' => Str::uuid(),
             'user_id' => $user->id,
+            'notes' => $notes,
             'car_id' => $car->id,
             'province_id' => $pro->id ?? null,
             'district_id' => $dis->id ?? null,
+            'isDelivery' => $isDelivery,
             'desc' => $desc,
             'price' => $price,
         ]);
@@ -131,7 +161,11 @@ class CarController extends Controller
             $imageId = $this->getImage($image, 'cars');
             array_push($is, $imageId);
         }
-        
+        $randGuest = rand(1,10);
+        for ($i=0; $i < $randGuest; $i++) { 
+            $guest = User::inRandomOrder()->limit($randGuest)->get();
+            $owner->guests()->attach($guest,['star'=>random_number()]);
+        }
         $owner->features()->attach($fs);
         $owner->images()->attach($is);
 
@@ -162,6 +196,10 @@ class CarController extends Controller
             
             
         }
+      
+          
+          // Tạo hàm random
+      
 
         return response()->json([
             'status_code' => 201,
@@ -173,13 +211,13 @@ class CarController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $slug)
+    public function show(string $id)
     {
         return response()->json([
             'status_code' => 200,
             'error' => false,
             'message' => 'Thành công',
-            'data' => new CarResource(Car::where('slug', $slug)->first())
+            'data' => new CarResource(Owner::findOrFail($id))
         ]);
     }
 
@@ -206,4 +244,5 @@ class CarController extends Controller
     {
         //
     }
+    
 }

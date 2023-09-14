@@ -6,6 +6,7 @@ use App\Models\District;
 use App\Models\Province;
 use App\Models\Ward;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class LocationController extends Controller
 {
@@ -24,7 +25,8 @@ class LocationController extends Controller
                 }])->get();
                 break;
 
-            case 'district':
+            case '2';
+            case 'districts':
                 $provinces = Province::with('districts')->get();
                 break;
 
@@ -38,7 +40,8 @@ class LocationController extends Controller
                     $query->where('type-slug', $scope);
                 }])->orderBy('districts_count', 'DESC')->get();
                 break;
-            case 'ward':
+            case '3';
+            case 'wards':
                 $provinces = Province::with(
                     ['districts' => function ($query) {
                         $query->with('wards');
@@ -119,11 +122,17 @@ class LocationController extends Controller
 
         // }
 
+        // return response()->json([
+        //     'status_code' => 200,
+        //     'error' => false,
+        //     'message' => $provinces,
+        // ], 200);
+
         return response()->json([
-            'status_code' => 200,
+            'status_code' => 503,
             'error' => true,
             'message' => 'Đang bảo trì',
-        ], 200);
+        ], 503);
     }
 
     /**

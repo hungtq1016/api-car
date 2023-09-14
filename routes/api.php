@@ -25,7 +25,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::resource('/brand', BrandController::class);
 Route::resource('/model', ModelController::class);
 Route::resource('/car', CarController::class)->parameters([
-    'car' => 'slug'
+    'car' => 'id'
 ]);;
 Route::resource('/comment', CommentController::class);
 

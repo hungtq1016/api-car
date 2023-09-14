@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CommentResource extends JsonResource
+class ChildCommentResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -18,10 +18,10 @@ class CommentResource extends JsonResource
             'id' => $this->id,
             'content' => $this->content,
             'user' => $this->user,
-            'left' => $this->left,
             'right' => $this->right,
-            'children'=>Self::collection($this->children),
-            'hasChild'=>$this->children()->count() > 0 ? true:false
+            'left' => $this->left,
+            'created_at' => $this->created_at,
+            'children' => Self::collection($this->children),
         ];
     }
 }
