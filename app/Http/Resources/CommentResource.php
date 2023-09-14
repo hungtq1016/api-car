@@ -20,6 +20,7 @@ class CommentResource extends JsonResource
             'user' => $this->user,
             'left' => $this->left,
             'right' => $this->right,
+            'created_at' => $this->created_at,
             'children'=>Self::collection($this->children),
             'hasChild'=>$this->children()->count() > 0 ? true:false
         ];

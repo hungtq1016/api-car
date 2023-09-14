@@ -61,26 +61,22 @@ class CarController extends Controller
         $notes = $request->notes;
         $transmission_type = $request->transmission_type;
         function random_number() {
-            $probabilities = [
-                1 => 2,
-                2 => 3,
-                3 => 10,
-                4 => 15,
-                5 => 70,
-            ];
-            
-            // Tạo một biến để lưu trữ giá trị random
-            $random_value = rand(1, 5);
-            
-            // Kiểm tra xác suất của từng giá trị
-            foreach ($probabilities as $value => $probability) {
-                if ($random_value <= $probability) {
-                    return $value;
-                }
+            $random_value = rand(1, 100);
+            if ($random_value>0 && $random_value<=2) {
+                return 1;
             }
-            
-            // Nếu giá trị vượt quá xác suất của tất cả các giá trị, trả về 5
-            return 5;
+            if ($random_value>2 && $random_value<=5) {
+                return 2;
+            }
+            if ($random_value>5 && $random_value<=15) {
+                return 3;
+            }
+            if ($random_value>15 && $random_value<=30) {
+                return 4;
+            }
+            if ($random_value>30 && $random_value<=100) {
+                return 5;
+            }
           }
         $price = $request->price;
         $location = str_replace(', ', ',', $location);
@@ -161,9 +157,9 @@ class CarController extends Controller
             $imageId = $this->getImage($image, 'cars');
             array_push($is, $imageId);
         }
-        $randGuest = rand(1,10);
+        $randGuest = rand(10,100);
         for ($i=0; $i < $randGuest; $i++) { 
-            $guest = User::inRandomOrder()->limit($randGuest)->get();
+            $guest = User::inRandomOrder()->first();
             $owner->guests()->attach($guest,['star'=>random_number()]);
         }
         $owner->features()->attach($fs);
@@ -175,24 +171,27 @@ class CarController extends Controller
         $parentArr=[];
         for ($i=0; $i < $randCmt; $i++) { 
             $us = User::inRandomOrder()->first();
-            if ($i>0) {
-                array_push($parentArr,$parentId);
-                $result = (new CommentController)->store([
-                    'post_id'=>$owner->id,
-                    'user_id'=>$us->id,
-                    'content'=>fake()->text(),
-                    'parent_id'=>$parentArr[rand(0,count($parentArr)-1)]
-                ]);
-                $parentId =strval($result->original['message'][0]['id']);
-            }else{
-                $result = (new CommentController)->store([
-                    'post_id'=>$owner->id,
-                    'user_id'=>$us->id,
-                    'content'=>fake()->text(),
-                    'parent_id'=>$parentId
-                ]);
-                $parentId =strval($result->original['message'][0]['id']);
-            }
+
+            $result = (new CommentController)->store([
+                'post_id'=>$owner->id,
+                'user_id'=>$us->id,
+                'content'=>fake()->realText(rand(10,50)),
+                'parent_id'=>rand(0,1)?null:$parentId
+            ]);
+            $parentId =strval($result->original['message'][0]['id']);
+            array_push($parentArr,$parentId);
+
+            // if ($i>0) {
+            //     $result = (new CommentController)->store([
+            //         'post_id'=>$owner->id,
+            //         'user_id'=>$us->id,
+            //         'content'=>fake()->realText(rand(10,50)),
+            //         'parent_id'=>$parentArr[rand(0,count($parentArr)-1)]
+            //     ]);
+            //     $parentId =strval($result->original['message'][0]['id']);
+            // }else{
+               
+            // }
             
             
         }

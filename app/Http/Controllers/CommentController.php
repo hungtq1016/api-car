@@ -26,7 +26,7 @@ class CommentController extends Controller
                 'status_code'=>200,
                 'error'=>false,
                 'message'=>'Gọi bình luận thành công',
-                'data'=> ChildCommentResource::collection($comments)
+                'data'=> CommentResource::collection($comments)
             ]);
        
         }else{
