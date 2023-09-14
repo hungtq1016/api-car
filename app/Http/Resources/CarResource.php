@@ -20,6 +20,13 @@ class CarResource extends JsonResource
                 'name' => $this->car->name,
                 'slug' => $this->car->slug,
             ],
+            'rating'=>[
+                '1'=>$this->guests()->where('star',1)->count(),
+                '2'=>$this->guests()->where('star',2)->count(),
+                '3'=>$this->guests()->where('star',3)->count(),
+                '4'=>$this->guests()->where('star',4)->count(),
+                '5'=>$this->guests()->where('star', 5)->count(),
+            ],
             'province' => $this->province,
             'district' => $this->district,
             'isDelivery'=>$this->isDelivery,

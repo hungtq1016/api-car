@@ -19,9 +19,8 @@ class CommentController extends Controller
         if ($request->has('parent_id')) {
             $comments = Comment::where([
                 ['post_id',$request['post_id']],
-                ['left','>',$request->left],
-                ['right','<=',$request->right],
-            ])->get();
+                ['parent_id',$request['parent_id']],
+            ])->orderBy('left','ASC')->get();
             return response()->json([
                 'status_code'=>200,
                 'error'=>false,
@@ -33,14 +32,8 @@ class CommentController extends Controller
             $comments = Comment::where([
                 ['post_id',$request['post_id']],
                 ['parent_id',null]
-            ])->get();
-            return response()->json([
-                'status_code'=>200,
-                'error'=>false,
-                'message'=>'Gọi bình luận thành công',
-                'data'=> CommentResource::collection($comments)
-            ]);
-            
+            ])->paginate(5);
+            return CommentResource::collection($comments);
         }
        
 

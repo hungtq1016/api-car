@@ -165,7 +165,7 @@ class CarController extends Controller
         $owner->features()->attach($fs);
         $owner->images()->attach($is);
 
-        $randCmt = rand(5,15);
+        $randCmt = rand(10,50);
         $parentId = null;
         $result = '';
         $parentArr=[];
@@ -176,30 +176,12 @@ class CarController extends Controller
                 'post_id'=>$owner->id,
                 'user_id'=>$us->id,
                 'content'=>fake()->realText(rand(10,50)),
-                'parent_id'=>rand(0,1)?null:$parentId
+                'parent_id'=>rand(0,1)?null:($parentId==null?null:$parentArr[rand(0,count($parentArr)-1)])
             ]);
             $parentId =strval($result->original['message'][0]['id']);
-            array_push($parentArr,$parentId);
-
-            // if ($i>0) {
-            //     $result = (new CommentController)->store([
-            //         'post_id'=>$owner->id,
-            //         'user_id'=>$us->id,
-            //         'content'=>fake()->realText(rand(10,50)),
-            //         'parent_id'=>$parentArr[rand(0,count($parentArr)-1)]
-            //     ]);
-            //     $parentId =strval($result->original['message'][0]['id']);
-            // }else{
-               
-            // }
-            
-            
+            array_push($parentArr,$parentId);  
         }
       
-          
-          // Tạo hàm random
-      
-
         return response()->json([
             'status_code' => 201,
             'error' => false,
