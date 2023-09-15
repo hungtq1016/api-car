@@ -13,7 +13,7 @@ class Feature extends Model
     use HasFactory;
     use UUID;
     protected $table = 'features';
-    protected $fillable = ['name','slug'];
+    protected $fillable = ['name','slug','image_id'];
     protected $hidden = ['pivot','id','created_at','updated_at'];
 
     public function cars():BelongsToMany

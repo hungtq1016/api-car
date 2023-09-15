@@ -22,7 +22,6 @@ class Car extends Model
         'fuel_type',
         'transmission_type',
         'brand_id',
-        'version_id',
         'model_id'
     ];
     protected $hidden = ['created_at','updated_at'];
@@ -34,10 +33,6 @@ class Car extends Model
     public function model(): BelongsTo
     {
         return $this->belongsTo(CarModel::class);
-    }
-    public function version(): BelongsTo
-    {
-        return $this->belongsTo(Version::class);
     }
     public function owners() : HasMany {
         return $this->hasMany(Owner::class);

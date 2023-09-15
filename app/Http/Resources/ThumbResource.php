@@ -14,8 +14,8 @@ class ThumbResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $province = strval($this->province->name) ?? 'Chưa Có';
-        $location= "{$province}";
+        // $province = strval($this->province->name) ?? 'Chưa Có';
+        // $location= "{$province}";
         return [
             'id' => $this->id,
             'info' => [
@@ -23,7 +23,7 @@ class ThumbResource extends JsonResource
                 'slug' => $this->car->slug,
             ],
             
-            'location' => $location,
+            'location' => $this->province->name,
             'isDelivery'=>$this->isDelivery,
             'price'=>$this->price,
             'seats'=>$this->car->seats,

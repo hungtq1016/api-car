@@ -15,7 +15,7 @@ class Owner extends Model
     use UUID;
 
     protected $table ='owners';
-    protected $fillable = ['province_id','district_id','desc','price','car_id','user_id','notes','isDelivery'];
+    protected $fillable = ['province_id','district_id','desc','price','car_id','user_id','isDelivery','isInstant','isMortgages','address'];
 
     public function images():BelongsToMany
     {
@@ -58,6 +58,10 @@ class Owner extends Model
 
     public function guests() : BelongsToMany {
         return $this->belongsToMany(User::class,'owner_guest','owner_id');
+    }
+
+    public function likes() : BelongsToMany {
+        return $this->belongsToMany(User::class,'likes','post_id');
     }
     
 }

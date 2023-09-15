@@ -13,15 +13,22 @@ return new class extends Migration
     {
         Schema::create('owners', function (Blueprint $table) {
             $table->uuid('id')->primary(); 
+
+            $table->uuid('car_id');
+            $table->uuid('user_id');
+
             $table->uuid('province_id')->nullable(true);
             $table->uuid('district_id')->nullable(true);
             $table->uuid('ward_id')->nullable(true);
+
             $table->unsignedBigInteger('price');
             $table->boolean('isDelivery')->default(1);
+            $table->boolean('isMortgages')->default(1);
+            $table->boolean('isInstant')->default(1);
             $table->text('desc');
-            $table->text('notes');
-            $table->uuid('car_id');
-            $table->uuid('user_id');
+            $table->string('address');
+     
+    
             $table->timestamps();
         });
     }

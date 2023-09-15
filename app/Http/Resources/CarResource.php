@@ -19,29 +19,39 @@ class CarResource extends JsonResource
             'info' => [
                 'name' => $this->car->name,
                 'slug' => $this->car->slug,
+                'seats'=>$this->car->seats,
+                'fuel_type'=>$this->car->fuel_type,
+                'fuel_consumption'=>$this->car->fuel_consumption,
+                'transmission_type'=>$this->car->transmission_type,
+                'features' => FeatureResource::collection($this->features),
+                'isDelivery'=>$this->isDelivery,
+                'total_trip'=>$this->guests->count(),
+                'like_count'=>$this->likes->count(),
+                'price'=>$this->price,
+                'notes' => $this->notes,
+                'rating'=>[
+                    'total'=>$this->guests->count(),
+                    'avg' => $this->guests()->avg('star'),
+                    'star'=>[
+                        '1'=>$this->guests()->where('star',1)->count(),
+                        '2'=>$this->guests()->where('star',2)->count(),
+                        '3'=>$this->guests()->where('star',3)->count(),
+                        '4'=>$this->guests()->where('star',4)->count(),
+                        '5'=>$this->guests()->where('star', 5)->count(),
+                    ]
+                ],
+                'location'=>[
+                    'province' => $this->province,
+                    'district' => $this->district,
+                ],
             ],
-            'rating'=>[
-                '1'=>$this->guests()->where('star',1)->count(),
-                '2'=>$this->guests()->where('star',2)->count(),
-                '3'=>$this->guests()->where('star',3)->count(),
-                '4'=>$this->guests()->where('star',4)->count(),
-                '5'=>$this->guests()->where('star', 5)->count(),
+            
+           
+            'tab'=>[
+                'desc' => $this->desc,
             ],
-            'province' => $this->province,
-            'district' => $this->district,
-            'features' => FeatureResource::collection($this->features),
-            'desc' => $this->desc,
-            'notes' => $this->notes,
-            'isDelivery'=>$this->isDelivery,
-            'price'=>$this->price,
-            'seats'=>$this->car->seats,
-            'fuel_type'=>$this->car->fuel_type,
-            'fuel_consumption'=>$this->car->fuel_consumption,
-            'transmission_type'=>$this->car->transmission_type,
-            'total_trip'=>$this->guests->count(),
             'images'=>$this->images,
-            'total_review'=>$this->guests->count(),
-            'review' => $this->guests()->avg('star'),
+
         ];
         
     }

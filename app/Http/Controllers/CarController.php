@@ -11,12 +11,12 @@ use App\Models\Feature;
 use App\Models\Owner;
 use App\Models\Province;
 use App\Models\User;
-use App\Models\Version;
 use App\Traits\getImageFromURL;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Http\Controllers\CommentController;
 use App\Http\Resources\ThumbResource;
+use App\Models\Comment;
 
 class CarController extends Controller
 {
@@ -57,9 +57,13 @@ class CarController extends Controller
         $images = $request->images;
         $location = $request->location;;
         $isDelivery = $request->isDelivery;
+        $isInstant = $request->isInstant;
+        $isMortgages = $request->isMortgages;
+        $address = $request->address;
         $desc = $request->desc;
-        $notes = $request->notes;
         $transmission_type = $request->transmission_type;
+        $price = $request->price;
+
         function random_number() {
             $random_value = rand(1, 100);
             if ($random_value>0 && $random_value<=2) {
@@ -78,11 +82,11 @@ class CarController extends Controller
                 return 5;
             }
           }
-        $price = $request->price;
         $location = str_replace(', ', ',', $location);
         $locate = explode(',', $location);
         $locate = array_reverse($locate);
-        $fs = [];
+
+        $featureArray = [];
         foreach ($features as $feature) {
             $f = Feature::firstOrCreate([
                 'name' => $feature['name'],
@@ -93,79 +97,82 @@ class CarController extends Controller
                 $f->image_id = $id;
                 $f->save();
             }
-            array_push($fs, $f->id);
+            array_push($featureArray, $f->id);
         }
         // Chia chuỗi thành các từ
-        $names = strtolower($carName);
-        $arrName = explode(" ", $names);
+        $carName = strtolower($carName);
+        $car_name = $carName;
+        $arrName = explode(" ", $carName);
         // Lấy từ đầu tiên của mảng
-        $first_word = $arrName[0];
-        $last_word = $arrName[count($arrName) - 1];
+        $brand_name = '';
+        $twowordbrands= ['morris garages','aston martin'];
+        $is2Words = array_search($arrName[0].' '.$arrName[1],$twowordbrands);
+        if ($is2Words) {
+            $brand_name = $arrName[0].' '.$arrName[1];
+        }else{
+            $brand_name = $arrName[0];
+        }
+        $model_name = str_replace($brand_name,'',$carName);
 
-        $fitst = array_shift($arrName);
-        $last = array_pop($arrName);
-        $mid = implode(" ", $arrName);
         $brand = Brand::firstOrCreate([
-            'name' => ucfirst($first_word),
-            'slug' => Str::slug($first_word, '-'),
+            'name' => $brand_name,
+            'slug' => Str::slug($brand_name, '-'),
             'image_id' => ''
         ]);
         $model = CarModel::firstOrCreate([
-            'name' => $mid,
-            'slug' => Str::slug($mid, '-'),
+            'name' => $model_name,
+            'slug' => Str::slug($model_name, '-'),
             'brand_id' => $brand->id
         ]);
 
-        // $model->brand_id = $brand->id;
-        $model->save();
-
-        $version = Version::firstOrCreate([
-            'year' => is_integer($last_word) ? $last_word : intval($last_word),
-            'model_id' => $model->id
-        ]);
-
-        // $version->model_id = $model->id;
-        $version->save();
         $car = Car::firstOrCreate([
-            'name' => $names,
-            'slug' => Str::slug($names, '-'),
+            'name' => $car_name,
+            'slug' => Str::slug($car_name, '-'),
+            'seats' => $seats,
             'brand_id' => $brand->id,
             'model_id' => $model->id,
-            'version_id' => $version->id,
-            'fuel_type' => $fuel_type,
             'fuel_consumption' => $fuel_consumption,
-            'transmission_type' => $transmission_type&&-1,
-            'seats' => $seats
+            'fuel_type' => $fuel_type,
+            'transmission_type' => $transmission_type,
         ]);
 
         $user = User::inRandomOrder()->first();
         $dis = District::where('name', $locate[1])->first();
-        $pro = Province::where('name', $locate[0] == 'Hồ Chí Minh' ? 'Thành phố Hồ Chí Minh' : $locate[0])->first();
+        $pro = Province::where('name', 'Thành phố '.$locate[0])->first();
+
         $owner = Owner::create([
             'id' => Str::uuid(),
             'user_id' => $user->id,
-            'notes' => $notes,
             'car_id' => $car->id,
             'province_id' => $pro->id ?? null,
             'district_id' => $dis->id ?? null,
             'isDelivery' => $isDelivery,
             'desc' => $desc,
             'price' => $price,
+            'isInstant' =>$isInstant,
+            'isMortgages' =>$isMortgages,
+            'address' =>$address,
         ]);
-        $is = [];
+
+        $imageArray = [];
         foreach ($images as $image) {
             $imageId = $this->getImage($image, 'cars');
-            array_push($is, $imageId);
+            array_push($imageArray, $imageId);
         }
         $randGuest = rand(10,100);
         for ($i=0; $i < $randGuest; $i++) { 
             $guest = User::inRandomOrder()->first();
-            $owner->guests()->attach($guest,['star'=>random_number()]);
+            $star= random_number();
+            if ($star == 5) {
+                $owner->likes()->attach($guest);
+            }
+            $owner->guests()->attach($guest,['star'=>$star]);
         }
-        $owner->features()->attach($fs);
-        $owner->images()->attach($is);
+        $owner->features()->attach($featureArray);
+        $owner->images()->attach($imageArray);
 
-        $randCmt = rand(10,50);
+        $randCmt = rand(10,20);
+        $randLike = rand(20,50);
         $parentId = null;
         $result = '';
         $parentArr=[];
@@ -180,6 +187,12 @@ class CarController extends Controller
             ]);
             $parentId =strval($result->original['message'][0]['id']);
             array_push($parentArr,$parentId);  
+        }
+        for ($i=0; $i < $randLike; $i++) { 
+            $usr = User::inRandomOrder()->first();
+            $cmt = Comment::inRandomOrder()->first();
+            $cmt->likes()->syncWithoutDetaching($usr);
+
         }
       
         return response()->json([

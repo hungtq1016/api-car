@@ -16,10 +16,6 @@ class CarModel extends Model
     protected $hidden = ['brand_id'];
     protected $fillable = ['name','slug','brand_id','created_at','updated_at'];
 
-    public function versions(): HasMany
-    {
-        return $this->hasMany(Version::class,'model_id');
-    }
     public function cars():HasMany
     {
         return $this->hasMany(Car::class);
