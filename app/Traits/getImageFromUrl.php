@@ -15,8 +15,8 @@ trait getImageFromURL
             Storage::disk('public')->put($local, $contents);
             $host = request()->getHttpHost();
             $img = Image::create([
-                'src'=>$host,
-                'local_src'=>$local,
+                'domain'=>$host,
+                'path'=>$local,
             ]);
 
             return $img->id;

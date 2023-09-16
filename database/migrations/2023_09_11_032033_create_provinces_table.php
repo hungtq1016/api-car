@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('slug');
             $table->string('type');
             $table->string('type-slug');
+            $table->uuid('image_id')->nullable(true);
             $table->tinyInteger('code');
             $table->timestamps();
         });

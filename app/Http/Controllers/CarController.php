@@ -113,12 +113,27 @@ class CarController extends Controller
             $brand_name = $arrName[0];
         }
         $model_name = str_replace($brand_name,'',$carName);
-
+        
+        $findProvince = Province::where('name', $locate[0])->first();
+        $tolower =  Str::slug($locate[0],'-');
+        if ($findProvince->image_id == null) {
+            $imgpro = 'http://localhost:8001/provinces/'.$tolower.'.jpg';
+            $impro = $this->getImage($imgpro, 'provinces');
+            $findProvince->image_id = $impro;
+            $findProvince->save();
+        }
+        
+       
         $brand = Brand::firstOrCreate([
             'name' => $brand_name,
             'slug' => Str::slug($brand_name, '-'),
-            'image_id' => ''
         ]);
+        if ($brand->image_id == null) {
+            $img = 'http://localhost:8001/model/'.Str::slug($brand_name, '-').'.png';
+            $idimgbrand = $this->getImage($img, 'model');
+            $brand->image_id = $idimgbrand;
+            $brand->save();
+        }
         $model = CarModel::firstOrCreate([
             'name' => $model_name,
             'slug' => Str::slug($model_name, '-'),
@@ -138,7 +153,7 @@ class CarController extends Controller
 
         $user = User::inRandomOrder()->first();
         $dis = District::where('name', $locate[1])->first();
-        $pro = Province::where('name', 'Thành phố '.$locate[0])->first();
+        $pro = Province::where('name', $locate[0])->first();
 
         $owner = Owner::create([
             'id' => Str::uuid(),
@@ -198,7 +213,8 @@ class CarController extends Controller
         return response()->json([
             'status_code' => 201,
             'error' => false,
-            'message' => 'Tải thành công',
+            'message' => $tolower,
+            'data'=>$findProvince
         ], 201);
     }
 
