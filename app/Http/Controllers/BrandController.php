@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\BrandResource;
 use App\Models\Brand;
 use Illuminate\Http\Request;
 use App\Traits\getImageFromURL;
@@ -19,20 +20,20 @@ class BrandController extends Controller
             // $brands = Brand::with('models')->get();
         // $brands = Brand::all();
 
-        // $brands = Brand::with('image')->withCount('models')->orderBy('models_count', 'desc')->limit(10)->get();   
+        // $brands = Brand::withCount('models')->orderBy('models_count', 'desc')->limit(10)->get();   
         $brands = Brand::all();
-        foreach ($brands as $br) {
-            if ($br->image_id == null) {
-                $iiii = 'http://localhost:8001/model/'.$br->slug.'.png';
-                $abc = $this->getImage($iiii, 'model');
-                $br->image_id = $abc;
-                $br->save();
-            }
-        }
+        // foreach ($brands as $br) {
+        //     if ($br->image_id == null) {
+        //         $iiii = 'http://localhost:8001/model/'.$br->slug.'.png';
+        //         $abc = $this->getImage($iiii, 'model');
+        //         $br->image_id = $abc;
+        //         $br->save();
+        //     }
+        // }
         return response()->json([
             'code' => 200,
             'error' => false,
-            'data'=> $brands
+            'data'=> BrandResource::collection($brands)
         ]);
     }
 

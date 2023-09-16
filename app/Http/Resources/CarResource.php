@@ -14,6 +14,9 @@ class CarResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $diff_car = $this->user->ownerCars->filter(function ($car) {
+            return $car->id != $this->id;
+        });
         return [
             'id' => $this->id,
             'info' => [
@@ -28,7 +31,15 @@ class CarResource extends JsonResource
                 'total_trip'=>$this->guests->count(),
                 'like_count'=>$this->likes->count(),
                 'price'=>$this->price,
-                'notes' => $this->notes,
+                'notes' => 'Quy định khác:
+                ◦ Sử dụng xe đúng mục đích.
+                ◦ Không sử dụng xe thuê vào mục đích phi pháp, trái pháp luật.
+                ◦ Không sửa dụng xe thuê để cầm cố, thế chấp.
+                ◦ Không hút thuốc, nhả kẹo cao su, xả rác trong xe.
+                ◦ Không chở hàng quốc cấm dễ cháy nổ.
+                ◦ Không chở hoa quả, thực phẩm nặng mùi trong xe.
+                ◦ Khi trả xe, nếu xe bẩn hoặc có mùi trong xe, khách hàng vui lòng vệ sinh xe sạch sẽ hoặc gửi phụ thu phí vệ sinh xe.
+                Trân trọng cảm ơn, chúc quý khách hàng có những chuyến đi tuyệt vời !',
                 'rating'=>[
                     'total'=>$this->guests->count(),
                     'avg' => $this->guests()->avg('star'),
@@ -51,6 +62,8 @@ class CarResource extends JsonResource
                 'desc' => $this->desc,
             ],
             'images'=>$this->images,
+            'user'=>$this->user,
+            'diff_car'=>$diff_car
 
         ];
         

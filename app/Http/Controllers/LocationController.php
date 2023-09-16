@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ProvinceResource;
 use App\Models\District;
 use App\Models\Province;
 use App\Models\Ward;
@@ -67,7 +68,7 @@ class LocationController extends Controller
             'status_code' => 200,
             'error' => false,
             'message' => 'Thành công',
-            'data' => $provinces,
+            'data' => ProvinceResource::collection($provinces),
         ]);
     }
 
