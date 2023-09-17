@@ -14,11 +14,12 @@ class CarResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $diff_car = $this->user->ownerCars->filter(function ($car) {
+        $cars = $this->car->brand->cars->filter(function ($car) {
             return $car->id != $this->id;
-        });
+        })->slice(0, 4);
         return [
             'id' => $this->id,
+            'relate'=>ThumbResource::collection($cars),
             'info' => [
                 'name' => $this->car->name,
                 'slug' => $this->car->slug,
@@ -28,9 +29,12 @@ class CarResource extends JsonResource
                 'transmission_type'=>$this->car->transmission_type,
                 'features' => FeatureResource::collection($this->features),
                 'isDelivery'=>$this->isDelivery,
+                'isInstant'=>$this->isInstant,
+                'isInsurance'=>$this->isInsurance,
                 'total_trip'=>$this->guests->count(),
                 'like_count'=>$this->likes->count(),
                 'price'=>$this->price,
+                'address'=>$this->address,
                 'notes' => 'Quy định khác:
                 ◦ Sử dụng xe đúng mục đích.
                 ◦ Không sử dụng xe thuê vào mục đích phi pháp, trái pháp luật.
@@ -55,16 +59,30 @@ class CarResource extends JsonResource
                     'province' => $this->province,
                     'district' => $this->district,
                 ],
+               
             ],
             
            
-            'tab'=>[
+            'tabs'=>[
                 'desc' => $this->desc,
+                'policies'=>[
+                    'Thời Gian'=>['Trong vòng 2 giờ sau khi đặt','Trước 7 ngày sau khi đặt','Trong vòng 7 ngày sau khi đặt'],
+                    'Khách Thuê'=>['<span class="text-green-600">Không mất cọc</span>','<span class="text-amber-600">Mất 50% cọc </span>','<span class="text-red-600">Mất 100% cọc</span>'],
+                    'Chủ Xe'=>['<div class="text-green-600">Hoàn cọc 100%</div><div class="text-gray-600 text-xs">(Bị đánh giá 3 sao)</div>','<div class="text-amber-600">Hoàn cọc 100% (+50% giá trị cọc)</div><div class="text-gray-600 text-xs">(Bị đánh giá 2 sao)</div>','<div class="text-red-600">Hoàn cọc 100% (+100% giá trị cọc)</div><div class="text-gray-600 text-xs">(Bị đánh giá 1 sao)</div>']
+                ],
+                'isMortgages'=>$this->isMortgages,
+                'isIdentity'=>$this->isIdentity,
+                'identity'=>['◦ GPLX & CCCD gắn chip (đối chiếu)','◦ GPLX (đối chiếu) & Passport (giữ lại)'],
+                'mortgage'=>['Không cần thế chấp','◦ 15.000.000 ₫ (tiền mặt/chuyển khoản cho chủ xe khi nhận xe) hoặc Xe máy (kèm cà vẹt gốc) giá trị tương đương'],
+                'user'=>[
+                    'name'=>$this->user->name,
+                    'email'=>$this->user->email,
+                    'id'=>$this->user->id,
+                    'star'=>$this->user->star->avg('star'),
+                    'trip'=>$this->user->star->count(),
+                ],           
             ],
             'images'=>$this->images,
-            'user'=>$this->user,
-            'diff_car'=>$diff_car
-
         ];
         
     }

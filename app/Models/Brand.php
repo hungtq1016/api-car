@@ -20,17 +20,14 @@ class Brand extends Model
         return $this->belongsTo(Image::class);
     }
 
-    public function cars():HasMany
+    public function cars():HasManyThrough
     {
-        return $this->hasMany(Car::class);
+        return $this->hasManyThrough(Owner::class,Car::class);
     }
 
     public function models(): HasMany
     {
         return $this->hasMany(CarModel::class);
     }
-    public function versions(): HasManyThrough
-    {
-        return $this->hasManyThrough(Version::class, CarModel::class);
-    }
+    
 }

@@ -20,6 +20,7 @@ class ProvinceResource extends JsonResource
             'slug'=>$this->slug,
             'type'=>$this->type,
             'image'=>$this->image,
+            'car_count'=>$this->cars()->count(),
             'districts'=> DistrictResource::collection($this->whenLoaded('districts'))
         ];
     }

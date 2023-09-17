@@ -18,6 +18,7 @@ class BrandResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'slug' => $this->slug,
+            'cars_count' => $this->cars()->count(),
             'image'=> new ImageResource($this->image),
             'model_count'=> $this->whenCounted('models')
         ];
