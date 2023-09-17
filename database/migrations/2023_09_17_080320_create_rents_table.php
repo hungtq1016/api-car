@@ -12,7 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('rents', function (Blueprint $table) {
-            $table->id();
+            $table->id(); 
+            $table->uuid('owner_id');
+            $table->uuid('guest_id');
+            $table->string('address')->nullable(true);
+            $table->string('phone');
+            $table->integer('total');
+            $table->dateTimeTz('count_days');
+            $table->dateTimeTz('star_day');
+            $table->dateTimeTz('end_day');
+            $table->integer('fees')->default(0);
             $table->timestamps();
         });
     }

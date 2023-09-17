@@ -7,6 +7,7 @@ use App\Http\Controllers\ModelController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CarController;
+use App\Http\Controllers\FakeCarController;
 use App\Http\Controllers\LocationController;
 use Illuminate\Support\Facades\Route;
 
@@ -27,6 +28,7 @@ Route::resource('/model', ModelController::class);
 Route::resource('/car', CarController::class)->parameters([
     'car' => 'id'
 ]);;
+Route::post('/fake-car',[FakeCarController::class,'fake']);
 Route::resource('/comment', CommentController::class);
 
 Route::resource('/location', LocationController::class);

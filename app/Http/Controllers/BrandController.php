@@ -16,20 +16,9 @@ class BrandController extends Controller
      */
     public function index()
     {
-        //   $brands = Brand::through('models')->has('deployments')->get();
-            // $brands = Brand::limit(10)->get();
-        $brands = Brand::all();
 
-        $brands = Brand::withCount('models')->orderBy('models_count', 'desc')->limit(10)->get();   
-        // $brands = Brand::all();
-        // foreach ($brands as $br) {
-        //     if ($br->image_id == null) {
-        //         $iiii = 'http://localhost:8001/model/'.$br->slug.'.png';
-        //         $abc = $this->getImage($iiii, 'model');
-        //         $br->image_id = $abc;
-        //         $br->save();
-        //     }
-        // }
+        $brands = Brand::withCount('models')->orderBy('models_count', 'desc')->has('models','>',0)->limit(20)->get();   
+   
         return response()->json([
             'code' => 200,
             'error' => false,
