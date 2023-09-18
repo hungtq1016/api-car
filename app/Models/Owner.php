@@ -53,7 +53,7 @@ class Owner extends Model
 
     public function comments() : HasMany 
     {
-        return $this->hasMany(Comment::class); 
+        return $this->hasMany(Comment::class,'post_id'); 
     }
 
     public function guests() : BelongsToMany {

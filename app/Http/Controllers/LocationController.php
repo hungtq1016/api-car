@@ -47,7 +47,7 @@ class LocationController extends Controller
                     ['districts' => function ($query) {
                         $query->with('wards');
                     }]
-                )->get();
+                )->orderBy('provinces.type','ASC')->get();
                 break;
             case 'thi-tran';
             case 'phuong';

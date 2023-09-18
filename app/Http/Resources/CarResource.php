@@ -35,6 +35,7 @@ class CarResource extends JsonResource
                 'like_count'=>$this->likes->count(),
                 'price'=>$this->price,
                 'address'=>$this->address,
+                'comment_count'=>$this->comments->count(),
                 'notes' => 'Quy định khác:
                 ◦ Sử dụng xe đúng mục đích.
                 ◦ Không sử dụng xe thuê vào mục đích phi pháp, trái pháp luật.
@@ -70,6 +71,7 @@ class CarResource extends JsonResource
                     'Khách Thuê'=>['<span class="text-green-600">Không mất cọc</span>','<span class="text-amber-600">Mất 50% cọc </span>','<span class="text-red-600">Mất 100% cọc</span>'],
                     'Chủ Xe'=>['<div class="text-green-600">Hoàn cọc 100%</div><div class="text-gray-600 text-xs">(Bị đánh giá 3 sao)</div>','<div class="text-amber-600">Hoàn cọc 100% (+50% giá trị cọc)</div><div class="text-gray-600 text-xs">(Bị đánh giá 2 sao)</div>','<div class="text-red-600">Hoàn cọc 100% (+100% giá trị cọc)</div><div class="text-gray-600 text-xs">(Bị đánh giá 1 sao)</div>']
                 ],
+                'comment_count'=>$this->comments->count(),
                 'isMortgages'=>$this->isMortgages,
                 'isIdentity'=>$this->isIdentity,
                 'identity'=>['◦ GPLX & CCCD gắn chip (đối chiếu)','◦ GPLX (đối chiếu) & Passport (giữ lại)'],
