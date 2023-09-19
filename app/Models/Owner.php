@@ -16,7 +16,7 @@ class Owner extends Model
     use UUID;
 
     protected $table ='owners';
-    protected $fillable = ['province_id','district_id','desc','price','car_id','user_id','isDelivery','isInstant','isMortgages','address','isIdentity','isInsurance'];
+    protected $fillable = ['province_id','district_id','desc','price','car_id','user_id','isDelivery','isInstant','isMortgages','address','isIdentity','isInsurance','delivery_fee'];
 
     public function images():BelongsToMany
     {

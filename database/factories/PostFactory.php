@@ -18,8 +18,8 @@ class PostFactory extends Factory
     public function definition(): array
     {
         return [
-            'title' => fake()->name(),
-            'content' => Str::random(255),
+            'title' => fake()->text(),
+            'content' => fake()->realText(),
         ];
     }
 }

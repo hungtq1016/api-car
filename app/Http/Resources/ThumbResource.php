@@ -31,7 +31,7 @@ class ThumbResource extends JsonResource
             'transmission_type'=>$this->car->transmission_type,
             'total_trip'=>$this->guests->count(),
             'image'=>$this->images->first(),
-            'total_review'=>$this->guests->count(),
+            'like_count'=>$this->likes->count(),
             'review' => $this->guests()->avg('star'),
         ];
     }

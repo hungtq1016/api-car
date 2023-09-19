@@ -29,6 +29,7 @@ class CarResource extends JsonResource
                 'transmission_type'=>$this->car->transmission_type,
                 'features' => FeatureResource::collection($this->features),
                 'isDelivery'=>$this->isDelivery,
+                'delivery_fee'=>$this->delivery_fee,
                 'isInstant'=>$this->isInstant,
                 'isInsurance'=>$this->isInsurance,
                 'total_trip'=>$this->guests->count(),

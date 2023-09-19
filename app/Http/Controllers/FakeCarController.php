@@ -34,7 +34,8 @@ class FakeCarController extends Controller
         $desc = $request->desc;
         $transmission_type = $request->transmission_type;
         $price = $request->price;
-
+        $delivery_fee = $request->delivery_fee;
+        $delivery_fee = $isDelivery ? $delivery_fee??50000 :0;
         function random_number() {
             $random_value = rand(1, 100);
             if ($random_value>0 && $random_value<=2) {
@@ -64,7 +65,7 @@ class FakeCarController extends Controller
                 'slug' => Str::slug($feature['name'], '-'),
             ]);
             if ($f->image_id == null) {
-                $id = $this->getImage($feature['logo'], 'logo');
+                $id = $this->getImage($feature['logo'], 'features');
                 $f->image_id = $id;
                 $f->save();
             }
@@ -101,7 +102,7 @@ class FakeCarController extends Controller
         ]);
         if ($brand->image_id == null) {
             $img = 'http://localhost:8001/model/'.Str::slug($brand_name, '-').'.png';
-            $idimgbrand = $this->getImage($img, 'model');
+            $idimgbrand = $this->getImage($img, 'models');
             $brand->image_id = $idimgbrand;
             $brand->save();
         }
@@ -110,7 +111,6 @@ class FakeCarController extends Controller
             'slug' => Str::slug($model_name, '-'),
             'brand_id' => $brand->id
         ]);
-
         $car = Car::firstOrCreate([
             'name' => $car_name,
             'slug' => Str::slug($car_name, '-'),
@@ -121,6 +121,7 @@ class FakeCarController extends Controller
             'fuel_type' => $fuel_type,
             'transmission_type' => $transmission_type,
         ]);
+      
 
         $user = User::inRandomOrder()->first();
         $dis = District::where('name', $locate[1])->first();
@@ -133,10 +134,11 @@ class FakeCarController extends Controller
             'province_id' => $pro->id ?? null,
             'district_id' => $dis->id ?? null,
             'isDelivery' => $isDelivery,
-            'desc' => $desc,
+            'desc' => $desc??'',
             'price' => $price,
             'isInstant' =>$isInstant,
             'isMortgages' =>$isMortgages,
+            'delivery_fee' =>$delivery_fee,
             'address' =>$address,
         ]);
 
