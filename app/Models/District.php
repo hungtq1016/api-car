@@ -25,4 +25,9 @@ class District extends Model
     {
         return $this->hasMany(Ward::class);
     }
+
+    public function cars() :HasMany
+    {
+        return $this->hasMany(Owner::class);
+    }
 }

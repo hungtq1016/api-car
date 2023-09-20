@@ -19,6 +19,7 @@ class DistrictResource extends JsonResource
             'name'=>$this->name,
             'slug'=>$this->slug,
             'type'=>$this->type,
+            'car_count'=>$this->cars()->count(),
             'wards'=> WardResource::collection($this->whenLoaded('wards'))
         ];
     }

@@ -22,7 +22,7 @@ class CarController extends Controller
         if ($request->has('brand') && $request->brand != 'all') {
             $condition = $request->brand;
             $query->withWhereHas('brand', function ($query) use ($condition) {
-                $query->where('brands.name', $condition);
+                $query->where('brands.slug', $condition);
             });
         }
         if ($request->has('priceStar')||$request->has('priceEnd')) {
@@ -51,7 +51,7 @@ class CarController extends Controller
                     break;
                 default:
                     $query->whereHas('district', function ($query) use ($condition) {
-                        $query->where('districts.slug', $condition);
+                        $query->where('districts.name', $condition);
                     });
                     break;
             }
