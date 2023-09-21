@@ -8,6 +8,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CarController;
 use App\Http\Controllers\FakeCarController;
+use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\LocationController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,6 +26,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::resource('/brand', BrandController::class);
 Route::resource('/model', ModelController::class);
+Route::resource('/like',FavoriteController::class);
 Route::resource('/car', CarController::class)->parameters([
     'car' => 'id'
 ]);;

@@ -2,21 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\AuthenReosurce;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
     public function register(Request $request)
     {
         try {
-
+            $request->validate([
+                'email' => ['required', 'email','unique:users,email'],
+                'password' =>  ['required', 'confirmed', Password::min(8)],
+                'name' => ['required'],
+                'phone' => ['required'],
+                'address' => ['required'],
+            ]);
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
+                'address' => $request->address,
+                'phone' => $request->phone,
                 'password' => $request->password,
                 'remember_token' => Str::random(36),
             ]);
@@ -28,7 +38,8 @@ class AuthController extends Controller
                     'access_token' => $token,
                     'token_type' => 'Bearer',
                     'message' => 'Đăng ký thành công',
-                    'metadata' => $user,
+                    'data' => $user,
+                    'error' => false
                 ],
                 201
             );
@@ -36,7 +47,7 @@ class AuthController extends Controller
             return response()->json([
                 'status_code' => 500,
                 'message' => 'Có lỗi xảy ra thử lại sao ít phút!',
-                'error' => $th,
+                'error' => true,
             ]);
         }
     }
@@ -54,7 +65,8 @@ class AuthController extends Controller
             if (!Auth::attempt($credentials)) {
                 return response()->json([
                     'status_code' => 500,
-                    'message' => 'Có lỗi xảy ra thử lại sao ít phút!'
+                    'message' => 'Email hoặc mật khẩu sai',
+                    'error' => true,
                 ]);
             }
             $user = User::where('email', $request->email)->first();
@@ -66,15 +78,16 @@ class AuthController extends Controller
             return response()->json([
                 'status_code' => 200,
                 'access_token' => $token,
+                'error'=>false,
                 'token_type' => 'Bearer',
                 'message' => 'Đăng nhập thành công',
-                'metadata' => $user
+                'data' => new AuthenReosurce($user)
             ]);
         } catch (\Throwable $th) {
             return response()->json([
                 'status_code' => 500,
                 'message' => 'Có lỗi xảy ra thử lại sao ít phút!',
-                'error' => $th,
+                'error' => true,
             ]);
         }
     }
