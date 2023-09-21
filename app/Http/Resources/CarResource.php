@@ -33,7 +33,7 @@ class CarResource extends JsonResource
                 'isInstant'=>$this->isInstant,
                 'isInsurance'=>$this->isInsurance,
                 'total_trip'=>$this->guests->count(),
-                'like_count'=>$this->likes->count(),
+                'likes'=>UsersLikeResource::collection($this->likes),
                 'price'=>$this->price,
                 'address'=>$this->address,
                 'comment_count'=>$this->comments->count(),

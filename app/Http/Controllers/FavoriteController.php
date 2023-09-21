@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UsersLikeResource;
+use App\Models\Comment;
 use App\Models\Owner;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -14,17 +16,17 @@ class FavoriteController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Owner::query();
-        $query->where('id',$request->post_id)->first();
+        $like = '';
         if ($request->type=='car') {
-            $query->likes()->where('user_id',$request->user_id)->get();
+            $owner = Owner::where('id',$request->post_id)->first();
+            $like =  $owner->likes()->where('user_id',$request->user_id)->get();
         }
         if ($request->type=='comment') {
-            $query->with('comments')->get();
+            $comment = Comment::where('id',$request->post_id)->first();
+            $like = $comment->likes()->where('user_id',$request->user_id)->get();
         }
-        $like = $query;
         return response()->json([
-            'data'=>$like
+            'data'=>count($like) >0 ? true: false
         ]);
     }
 
@@ -41,17 +43,28 @@ class FavoriteController extends Controller
      */
     public function store(Request $request)
     {
-        $post = Owner::where('id',$request->post_id)->first();
-        $data ='';
-        if ($request->like) {
-            $data = $post->likes()->detach($request->user_id);
+        $owner = Owner::where('id',$request->post_id)->first();
+        $comment = Comment::where('id',$request->post_id)->first();
+        $data = '';
+        if ($request->type == 'comment') {
+            if ($request->like) {
+                $comment->likes()->attach($request->user_id);
+            }else{
+                $comment->likes()->detach($request->user_id);
+            }
+            $data = $comment->likes;
         }else{
-            $data =  $post->likes()->attach($request->user_id);
+            if ($request->like) {
+                $owner->likes()->attach($request->user_id);
+            }else{
+                $owner->likes()->detach($request->user_id);
+            }
+            $data = $owner->likes;
         }
         return response()->json([
-            'status_code'=>!$request->like?200:201,
-            'data'=>!$data
-        ],!$request->like?200:201);
+            'status_code'=>200,
+            'data'=> UsersLikeResource::collection($data)
+        ]);
     }
 
     /**
