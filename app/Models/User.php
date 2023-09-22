@@ -56,6 +56,11 @@ class User extends Authenticatable
         return $this->hasMany(Owner::class);    
     }
 
+    public function favorites() : BelongsToMany 
+    {
+        return $this->belongsToMany(Owner::class,'likes','user_id','post_id');
+    }
+
     public function hasBorrow() : BelongsToMany {
         return $this->belongsToMany(Owner::class,'owner_guest','user_id');
     }

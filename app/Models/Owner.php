@@ -54,7 +54,7 @@ class Owner extends Model
     }
     public function latestComment():HasOne
     {
-        return $this->hasOne(Comment::class,'post_id')->latest();
+        return $this->hasOne(Comment::class,'post_id')->latest('right');
     }
 
     public function comments() : HasMany 

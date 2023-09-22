@@ -7,8 +7,6 @@ use App\Models\Car;
 use App\Models\Owner;
 use Illuminate\Http\Request;
 use App\Http\Resources\ThumbResource;
-use App\Models\Brand;
-use DateTime;
 
 class CarController extends Controller
 {

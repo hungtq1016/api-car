@@ -52,71 +52,71 @@ class CommentController extends Controller
     public function store(Request $request)
     {
       
-        $parentId = $request->parent_id ?  $request->parent_id: null ;
-        $isRent = Rent::where([
-            ['owner_id',$request->post_id],
-            ['user_id',$request->user_id],
-        ])->first();
-        if ($isRent === null) {
+        
+        try {
+            $parentId = $request->parent_id ?  $request->parent_id: null ;
+            $isRent = Rent::where([
+                ['owner_id',$request->post_id],
+                ['user_id',$request->user_id],
+            ])->first();
+            if ($isRent === null) {
+                return response()->json([
+                    'status_code' => 202,
+                    'message' => 'Bạn phải thuê xe mới có thể bình luận!',
+                    'error'=>true,
+                ],202);
+            }
+            $comment = Comment::create([
+                'parent_id' => $parentId,
+                'post_id' => $request->post_id,
+                'user_id' => $request->user_id,
+                'content' => $request->content,
+            ]);
+            $right = 1; 
+            if ($parentId) {
+                $parent = Comment::findOrFail($parentId);
+                if (!$parent) {
+                    return response()->json([
+                        'status_code' => 202,
+                        'message' => 'Dữ liệu bị sai!',
+                        'error'=>true
+                    ],202);
+                }  
+                $right = $parent->right;
+                Comment::where([
+                    ['post_id','=',$request->post_id],
+                    ['right','>=',$right]
+                ])->increment('right', 2);
+                Comment::where([
+                    ['post_id','=',$request->post_id],
+                    ['left','>',$right]
+                ])->increment('left', 2);
+      
+            }else{
+                $maxRight = Comment::where('post_id',$request->post_id)->orderBy('right', 'DESC')->first();
+                if ($maxRight) {
+                    $right = $maxRight->right+1;
+                }
+            }
+           
+            Comment::where('id', $comment->id)->update(['left' => $right,'right'=>$right+1]);
+            $last = Comment::where('post_id',$request->post_id)->latest('right')->first();;
+            $children = $parent->children ?? [];
+            return response()->json([
+                'error'=>false,
+                'message'=>'Bình luận thành công!',
+                'data'=> new CommentResource($comment)  ,
+                'children'=>CommentResource::collection($children),
+                'right'=>$last->right
+            ],201);
+        } catch (\Throwable $th) {
             return response()->json([
                 'status_code' => 500,
-                'message' => 'Bạn phải thuê xe mới có thể bình luận!',
-                'error'=>true,
+                'message' => 'Có lỗi xảy ra thử lại sao ít phút!',
+                'error' => true,
+                'data'=>$th
             ],500);
         }
-        $comment = Comment::create([
-            'parent_id' => $parentId,
-            'post_id' => $request->post_id,
-            'user_id' => $request->user_id,
-            'content' => $request->content,
-        ]);
-        $right = 1; 
-        if ($parentId) {
-            $parent = Comment::findOrFail($parentId);
-            if (!$parent) {
-                return response()->json([
-                    'status_code' => 500,
-                    'message' => 'Dữ liệu bị sai!',
-                    'error'=>true
-                ],500);
-            }  
-            $right = $parent->right;
-            Comment::where([
-                ['post_id','=',$request->post_id],
-                ['right','>=',$right]
-            ])->increment('right', 2);
-            Comment::where([
-                ['post_id','=',$request->post_id],
-                ['left','>',$right]
-            ])->increment('left', 2);
-  
-        }else{
-            $maxRight = Comment::where('post_id',$request->post_id)->orderBy('right', 'DESC')->first();
-            if ($maxRight) {
-                $right = $maxRight->right+1;
-            }
-        }
-       
-        Comment::where('id', $comment->id)->update(['left' => $right,'right'=>$right+1]);
-        $last = Comment::where('post_id',$request->post_id)->latest('right')->first();;
-        $children = $parent->children ?? [];
-        return response()->json([
-            'error'=>false,
-            'message'=>'Bình luận thành công!',
-            'data'=> new CommentResource($comment)  ,
-            'children'=>CommentResource::collection($children),
-            'right'=>$last->right
-        ],201);
-        // try {
-          
-        // } catch (\Throwable $th) {
-        //     return response()->json([
-        //         'status_code' => 500,
-        //         'message' => 'Có lỗi xảy ra thử lại sao ít phút!',
-        //         'error' => true,
-        //         'data'=>$th
-        //     ],500);
-        // }
         
     }
 

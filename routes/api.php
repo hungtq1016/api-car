@@ -29,7 +29,7 @@ Route::resource('/model', ModelController::class);
 Route::resource('/like',FavoriteController::class);
 Route::resource('/car', CarController::class)->parameters([
     'car' => 'id'
-]);;
+]);
 Route::post('/fake-car',[FakeCarController::class,'fake']);
 Route::resource('/comment', CommentController::class);
 

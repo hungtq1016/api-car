@@ -14,7 +14,7 @@ use App\Models\Comment;
 use App\Traits\getImageFromURL;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use App\Http\Controllers\CommentController;
+use App\Http\Controllers\FakeCommentController;
 class FakeCarController extends Controller
 {
     use getImageFromURL;
@@ -167,7 +167,7 @@ class FakeCarController extends Controller
         for ($i=0; $i < $randCmt; $i++) { 
             $us = User::inRandomOrder()->first();
 
-            $result = (new CommentController)->store([
+            $result = (new FakeCommentController)->store([
                 'post_id'=>$owner->id,
                 'user_id'=>$us->id,
                 'content'=>fake()->realText(rand(10,50)),
