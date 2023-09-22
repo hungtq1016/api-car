@@ -51,7 +51,7 @@ class CarController extends Controller
                     break;
                 default:
                     $query->whereHas('district', function ($query) use ($condition) {
-                        $query->where('districts.name', $condition);
+                        $query->where('districts.slug', $condition);
                     });
                     break;
             }

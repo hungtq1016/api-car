@@ -22,8 +22,10 @@ class ThumbResource extends JsonResource
                 'name' => $this->car->name,
                 'slug' => $this->car->slug,
             ],
-            
-            'location' => $location,
+            'location' => [
+                'district'=>$this->district,
+                'province'=>$this->province,
+            ],
             'isDelivery'=>$this->isDelivery,
             'price'=>$this->price,
             'seats'=>$this->car->seats,

@@ -11,6 +11,6 @@ class Rent extends Model
     use HasFactory;
     use UUID;
 
-    protected $table ='rents';
-    protected $fillable = ['owner_id','guest_id','address','phone','total','count_days','star_day','end_day','fees'];
+    protected $table ='owner_guest';
+    protected $fillable = ['owner_id','user_id','star'];
 }
