@@ -61,7 +61,7 @@ class User extends Authenticatable
         return $this->belongsToMany(Owner::class,'likes','user_id','post_id');
     }
 
-    public function hasBorrow() : BelongsToMany {
+    public function rent() : BelongsToMany {
         return $this->belongsToMany(Owner::class,'owner_guest','user_id');
     }
 

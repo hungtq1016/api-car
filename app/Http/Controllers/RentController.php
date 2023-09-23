@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\FavoriteResource;
+use App\Http\Resources\RentResource;
 use App\Models\Rent;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class RentController extends Controller
@@ -10,9 +13,16 @@ class RentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $rent = Rent::where('user_id',$request->user_id)->orderBy('isPending','DESC')->get();
+        // $car = $rent->car;
+        return response()->json([
+            'status_code'=>201,
+            'error'=>false,
+            'message'=>'Đặt Thành Công!',
+            'data'=> RentResource::collection($rent)
+        ],201);
     }
 
     /**
@@ -28,7 +38,33 @@ class RentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $isPending = Rent::where([
+            ['user_id',$request->user_id],
+            ['isPending',1]
+        ])->first();
+        if ($isPending) {
+            return response()->json([
+                'status_code'=>202,
+                'error'=>true,
+                'message'=>'Bạn đã đặt xe rồi.',
+            ],202);
+        }
+        $rent = Rent::create([
+            'user_id'=>$request->user_id,
+            'owner_id'=>$request->owner_id,
+            'address'=>$request->address,
+            'start_day'=>$request->start_day,
+            'end_day'=>$request->end_day,
+            'total'=>$request->total,
+            'star'=>5
+        ]);
+
+        return response()->json([
+            'status_code'=>201,
+            'error'=>false,
+            'message'=>'Đặt Thành Công!',
+            'data'=>$rent
+        ],201);
     }
 
     /**

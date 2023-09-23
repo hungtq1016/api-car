@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class FavoriteResource extends JsonResource
+class RentResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -18,11 +18,12 @@ class FavoriteResource extends JsonResource
             'id'=>$this->id,
             'name' => $this->car->name,
             'slug' => $this->car->slug,
-            'price'=>$this->price,
-            'fuel_type'=>$this->car->fuel_type,
-            'transmission_type'=>$this->car->transmission_type,
-            'image'=>$this->images->first(),
-            'isPending'=>$this->isPending
+            'image'=>$this->owner->images->first(),
+            'isPending' => $this->isPending,
+            'start_day' => $this->start_day,
+            'end_day' => $this->end_day,
+            'address' => $this->address ,
+            'total' => $this->total ,
         ];
     }
 }
