@@ -19,7 +19,7 @@ class RentResource extends JsonResource
             'name' => $this->car->name,
             'slug' => $this->car->slug,
             'image'=>$this->owner->images->first(),
-            'isPending' => $this->isPending,
+            'status' => $this->status,
             'start_day' => $this->start_day,
             'end_day' => $this->end_day,
             'address' => $this->address ,

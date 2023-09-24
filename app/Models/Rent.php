@@ -12,7 +12,7 @@ class Rent extends Model
     use HasFactory;
 
     protected $table ='owner_guest';
-    protected $fillable = ['owner_id','user_id','star','start_day','end_day','address','total'];
+    protected $fillable = ['owner_id','user_id','star','start_day','end_day','address','total','status'];
 
 
     public function car(): HasOneThrough

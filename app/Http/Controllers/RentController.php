@@ -15,7 +15,7 @@ class RentController extends Controller
      */
     public function index(Request $request)
     {
-        $rent = Rent::where('user_id',$request->user_id)->orderBy('isPending','DESC')->get();
+        $rent = Rent::where('user_id',$request->user_id)->orderBy('status','DESC')->get();
         // $car = $rent->car;
         return response()->json([
             'status_code'=>201,
@@ -40,7 +40,7 @@ class RentController extends Controller
     {
         $isPending = Rent::where([
             ['user_id',$request->user_id],
-            ['isPending',1]
+            ['status',0]
         ])->first();
         if ($isPending) {
             return response()->json([
