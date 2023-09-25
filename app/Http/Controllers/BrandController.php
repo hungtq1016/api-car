@@ -9,21 +9,26 @@ use App\Traits\getImageFromURL;
 
 class BrandController extends Controller
 {
-    use getImageFromURL;
-
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-
-        $brands = Brand::withCount('models')->orderBy('models_count', 'desc')->has('models','>',0)->limit(20)->get();   
-   
-        return response()->json([
-            'code' => 200,
-            'error' => false,
-            'data'=> BrandResource::collection($brands)
-        ]);
+        try {
+            $brands = Brand::withCount('models')->orderBy('models_count', 'desc')->has('models','>',0)->limit(20)->get();   
+            return response()->json([
+                'code' => 200,
+                'error' => false,
+                'data'=> BrandResource::collection($brands)
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status_code' => 500,
+                'message' => 'Có lỗi xảy ra thử lại sao ít phút!',
+                'error' => true,
+                'throw'=>$th
+            ],500);
+        }
     }
 
     /**

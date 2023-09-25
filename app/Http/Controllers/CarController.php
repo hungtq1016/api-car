@@ -16,7 +16,8 @@ class CarController extends Controller
 
     public function index(Request $request)
     {
-        $query = Owner::query();
+        try {
+            $query = Owner::query();
         if ($request->has('brand') && $request->brand != 'all') {
             $condition = $request->brand;
             $query->withWhereHas('brand', function ($query) use ($condition) {
@@ -95,6 +96,14 @@ class CarController extends Controller
         $cars->appends($_GET);
 
         return ThumbResource::collection($cars);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status_code' => 500,
+                'message' => 'Có lỗi xảy ra thử lại sao ít phút!',
+                'error' => true,
+                'throw'=>$th
+            ],500);
+        }
     }
 
     /**
@@ -117,12 +126,21 @@ class CarController extends Controller
      */
     public function show(string $id)
     {
-        return response()->json([
-            'status_code' => 200,
-            'error' => false,
-            'message' => 'Thành công',
-            'data' => new CarResource(Owner::findOrFail($id))
-        ]);
+        try {
+            return response()->json([
+                'status_code' => 200,
+                'error' => false,
+                'message' => 'Thành công',
+                'data' => new CarResource(Owner::findOrFail($id))
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status_code' => 500,
+                'message' => 'Có lỗi xảy ra thử lại sao ít phút!',
+                'error' => true,
+                'throw'=>$th
+            ],500);
+        }
     }
 
     /**

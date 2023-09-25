@@ -16,7 +16,8 @@ class LocationController extends Controller
      */
     public function index(Request $request)
     {
-        $scope = $request->scope;
+        try {
+            $scope = $request->scope;
         $provinces = [];
         switch ($scope) {
             case 'thanh-pho-trung-uong';
@@ -70,6 +71,14 @@ class LocationController extends Controller
             'message' => 'Thành công',
             'data' => ProvinceResource::collection($provinces),
         ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status_code' => 500,
+                'message' => 'Có lỗi xảy ra thử lại sao ít phút!',
+                'error' => true,
+                'throw'=>$th
+            ],500);
+        }
     }
 
     /**

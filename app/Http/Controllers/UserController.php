@@ -12,10 +12,19 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::all();
-        return response()->json([
-            'metadata'=>$users
-        ]);
+        try {
+            $users = User::all();
+            return response()->json([
+                'metadata'=>$users
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status_code' => 500,
+                'message' => 'Có lỗi xảy ra thử lại sao ít phút!',
+                'error' => true,
+                'throw'=>$th
+            ],500);
+        }
     }
 
     /**

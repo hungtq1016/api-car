@@ -12,16 +12,21 @@ class ModelController extends Controller
      */
     public function index()
     {
-        // $models = CarModel::with('version')->get();
-        $models = CarModel::all();
-
-        // $models = CarModel::inRandomOrder()->with('cars')->with('image')->limit(50)->get();
-        
-        return response()->json([
-            'code' => 200,
-            'error' => false,
-            'data'=> $models
-        ]);
+        try {
+            $models = CarModel::all();        
+            return response()->json([
+                'code' => 200,
+                'error' => false,
+                'data'=> $models
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status_code' => 500,
+                'message' => 'Có lỗi xảy ra thử lại sao ít phút!',
+                'error' => true,
+                'throw'=>$th
+            ],500);
+        }
     }
 
     /**

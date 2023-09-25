@@ -48,6 +48,7 @@ class AuthController extends Controller
                 'status_code' => 500,
                 'message' => 'Có lỗi xảy ra thử lại sao ít phút!',
                 'error' => true,
+                'throw'=>$th
             ]);
         }
     }
@@ -88,6 +89,7 @@ class AuthController extends Controller
                 'status_code' => 500,
                 'message' => 'Có lỗi xảy ra thử lại sao ít phút!',
                 'error' => true,
+                'throw'=>$th
             ]);
         }
     }

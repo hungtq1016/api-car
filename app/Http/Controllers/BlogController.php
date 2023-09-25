@@ -13,13 +13,23 @@ class BlogController extends Controller
      */
     public function index()
     {
-        $blog = Blog::paginate(4);
-        return response()->json([
-            'status_code'=>200,
-            'error'=>false,
-            'message'=>'Thành Công',
-            'data'=>BlogResource::collection($blog)
-        ]);
+        try {
+            $blog = Blog::paginate(4);
+            return response()->json([
+                'status_code'=>200,
+                'error'=>false,
+                'message'=>'Thành Công',
+                'data'=>BlogResource::collection($blog)
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status_code' => 500,
+                'message' => 'Có lỗi xảy ra thử lại sao ít phút!',
+                'error' => true,
+                'throw'=>$th
+            ],500);
+        }
+        
     }
 
     /**

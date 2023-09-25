@@ -13,13 +13,22 @@ class FAQController extends Controller
      */
     public function index()
     {
-        $faq = FAQ::all();
-        return response()->json([
-            'status_code'=>200,
-            'error'=>false,
-            'message'=>'Thành Công',
-            'data'=>FAQResource::collection($faq)
-        ]);
+        try {
+            $faq = FAQ::all();
+            return response()->json([
+                'status_code'=>200,
+                'error'=>false,
+                'message'=>'Thành Công',
+                'data'=>FAQResource::collection($faq)
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status_code' => 500,
+                'message' => 'Có lỗi xảy ra thử lại sao ít phút!',
+                'error' => true,
+                'throw'=>$th
+            ],500);
+        }
     }
 
     /**

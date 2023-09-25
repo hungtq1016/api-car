@@ -15,14 +15,22 @@ class RentController extends Controller
      */
     public function index(Request $request)
     {
-        $rent = Rent::where('user_id',$request->user_id)->orderBy('status','DESC')->get();
-        // $car = $rent->car;
-        return response()->json([
-            'status_code'=>201,
-            'error'=>false,
-            'message'=>'Đặt Thành Công!',
-            'data'=> RentResource::collection($rent)
-        ],201);
+        try {
+            $rent = Rent::where('user_id',$request->user_id)->orderBy('status','DESC')->get();
+            return response()->json([
+                'status_code'=>201,
+                'error'=>false,
+                'message'=>'Đặt Thành Công!',
+                'data'=> RentResource::collection($rent)
+            ],201);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status_code' => 500,
+                'message' => 'Có lỗi xảy ra thử lại sao ít phút!',
+                'error' => true,
+                'throw'=>$th
+            ],500);
+        }
     }
 
     /**
@@ -38,33 +46,42 @@ class RentController extends Controller
      */
     public function store(Request $request)
     {
-        $isPending = Rent::where([
-            ['user_id',$request->user_id],
-            ['status',0]
-        ])->first();
-        if ($isPending) {
+        try {
+            $isPending = Rent::where([
+                ['user_id',$request->user_id],
+                ['status',0]
+            ])->first();
+            if ($isPending) {
+                return response()->json([
+                    'status_code'=>202,
+                    'error'=>true,
+                    'message'=>'Bạn đã đặt xe rồi.',
+                ],202);
+            }
+            $rent = Rent::create([
+                'user_id'=>$request->user_id,
+                'owner_id'=>$request->owner_id,
+                'address'=>$request->address,
+                'start_day'=>$request->start_day,
+                'end_day'=>$request->end_day,
+                'total'=>$request->total,
+                'star'=>5
+            ]);
+    
             return response()->json([
-                'status_code'=>202,
-                'error'=>true,
-                'message'=>'Bạn đã đặt xe rồi.',
-            ],202);
+                'status_code'=>201,
+                'error'=>false,
+                'message'=>'Đặt Thành Công!',
+                'data'=>$rent
+            ],201);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status_code' => 500,
+                'message' => 'Có lỗi xảy ra thử lại sao ít phút!',
+                'error' => true,
+                'throw'=>$th
+            ],500);
         }
-        $rent = Rent::create([
-            'user_id'=>$request->user_id,
-            'owner_id'=>$request->owner_id,
-            'address'=>$request->address,
-            'start_day'=>$request->start_day,
-            'end_day'=>$request->end_day,
-            'total'=>$request->total,
-            'star'=>5
-        ]);
-
-        return response()->json([
-            'status_code'=>201,
-            'error'=>false,
-            'message'=>'Đặt Thành Công!',
-            'data'=>$rent
-        ],201);
     }
 
     /**

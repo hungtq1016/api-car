@@ -17,18 +17,29 @@ class FavoriteController extends Controller
      */
     public function index(Request $request)
     {
-        $favorites = [];
-        if ($request->type=='car') {
-            $user = User::where('id',$request->user_id)->first();
-            $favorites = $user->favorites;
+      
+        try {
+            $favorites = [];
+            if ($request->type=='car') {
+                $user = User::where('id',$request->user_id)->first();
+                $favorites = $user->favorites;
+            }
+    
+            return response()->json([
+                'status_code'=>200,
+                'error'=>false,
+                'message'=>'Thành công',
+                'data'=> FavoriteResource::collection($favorites)
+            ]);
+    
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status_code' => 500,
+                'message' => 'Có lỗi xảy ra thử lại sao ít phút!',
+                'error' => true,
+                'throw'=>$th
+            ],500);
         }
-
-        return response()->json([
-            'status_code'=>200,
-            'error'=>false,
-            'message'=>'Thành công',
-            'data'=> FavoriteResource::collection($favorites)
-        ]);
     }
 
     /**
@@ -44,7 +55,8 @@ class FavoriteController extends Controller
      */
     public function store(Request $request)
     {
-        $owner = Owner::where('id',$request->post_id)->first();
+        try {
+            $owner = Owner::where('id',$request->post_id)->first();
         $comment = Comment::where('id',$request->post_id)->first();
         $data = '';
         if ($request->type == 'comment') {
@@ -66,6 +78,14 @@ class FavoriteController extends Controller
             'status_code'=>200,
             'data'=> UsersLikeResource::collection($data)
         ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status_code' => 500,
+                'message' => 'Có lỗi xảy ra thử lại sao ít phút!',
+                'error' => true,
+                'throw'=>$th
+            ],500);
+        }
     }
 
     /**
@@ -97,24 +117,27 @@ class FavoriteController extends Controller
      */
     public function destroy(Request $request,string $id)
     {
-        $user = User::where('id',$id)->first();
-        $data = '';
-        if ($request->type == 'comment') {
-            // if ($request->like) {
-            //     $comment->likes()->attach($request->user_id);
-            // }else{
-            //     $comment->likes()->detach($request->user_id);
-            // }
-            // $data = $comment->likes;
-        }else{
-            $user->favorites()->detach($request->post_id);
-            $data = $user->favorites;
+        try {
+            $user = User::where('id',$id)->first();
+            $data = '';
+            if ($request->type == 'comment') {
+            }else{
+                $user->favorites()->detach($request->post_id);
+                $data = $user->favorites;
+            }
+            return response()->json([
+                'status_code'=>200,
+                'message'=>'Xóa thành công',
+                'error'=>false,
+                'data'=> FavoriteResource::collection($data)
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status_code' => 500,
+                'message' => 'Có lỗi xảy ra thử lại sao ít phút!',
+                'error' => true,
+                'throw'=>$th
+            ],500);
         }
-        return response()->json([
-            'status_code'=>200,
-            'message'=>'Xóa thành công',
-            'error'=>false,
-            'data'=> FavoriteResource::collection($data)
-        ]);
     }
 }

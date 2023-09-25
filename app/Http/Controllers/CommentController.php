@@ -51,10 +51,16 @@ class CommentController extends Controller
      */
     public function store(Request $request)
     {
-      
-        
+       
         try {
-            $parentId = $request->parent_id ?  $request->parent_id: null ;
+            $parentId = $request->has('parent_id') ? $request->parent_id: null ;
+            if (!$request->has('post_id')||!$request->has('user_id')) {
+                return response()->json([
+                    'status_code' => 203,
+                    'message' => 'Thiếu dữ liệu',
+                    'error'=>true,
+                ],203);
+            }
             $isRent = Rent::where([
                 ['owner_id',$request->post_id],
                 ['user_id',$request->user_id],
@@ -114,7 +120,7 @@ class CommentController extends Controller
                 'status_code' => 500,
                 'message' => 'Có lỗi xảy ra thử lại sao ít phút!',
                 'error' => true,
-                'data'=>$th
+                'throw'=>$th
             ],500);
         }
         
