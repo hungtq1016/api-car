@@ -15,7 +15,7 @@ class RentResource extends JsonResource
     public function toArray(Request $request): array
     {
         return[
-            'id'=>$this->id,
+            'id'=>$this->owner->id,
             'name' => $this->car->name,
             'slug' => $this->car->slug,
             'image'=>$this->owner->images->first(),

@@ -16,7 +16,7 @@ class RentController extends Controller
     public function index(Request $request)
     {
         try {
-            $rent = Rent::where('user_id',$request->user_id)->orderBy('status','DESC')->get();
+            $rent = Rent::where('user_id',$request->user_id)->orderBy('status','ASC')->get();
             return response()->json([
                 'status_code'=>201,
                 'error'=>false,
